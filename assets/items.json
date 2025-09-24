@@ -1,0 +1,32 @@
+[
+  {
+    "item_id": "1",
+    "user_id": "101",
+    "item_name": "Backpack",
+    "postType": "lost",
+    "desc": "Black Adidas backpack with laptop inside",
+    "date": "2025-09-19",
+    "location": "University Library",
+    "item_image": "https://example.com/images/backpack.png"
+  },
+  {
+    "item_id": "2",
+    "user_id": "102",
+    "item_name": "Wallet",
+    "postType": "found",
+    "desc": "Brown leather wallet, contains student ID",
+    "date": "2025-09-18",
+    "location": "Main Cafeteria",
+    "item_image": "https://example.com/images/wallet.png"
+  },
+  {
+    "item_id": "3",
+    "user_id": "103",
+    "item_name": "Phone",
+    "postType": "lost",
+    "desc": "iPhone 14, black, with cracked screen protector",
+    "date": "2025-09-17",
+    "location": "Dormitory Entrance",
+    "item_image": "https://example.com/images/iphone.png"
+  }
+]
