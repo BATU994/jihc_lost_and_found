@@ -1,11 +1,17 @@
 class UserEntity {
   final String username;
-  final String userId;
+  final int userId;
   final String token;
+  final String email;
+  final String userType;
+  final String group;
   UserEntity({
     required this.username,
     required this.token,
     required this.userId,
+    required this.email,
+    required this.userType,
+    required this.group,
   });
 }
 

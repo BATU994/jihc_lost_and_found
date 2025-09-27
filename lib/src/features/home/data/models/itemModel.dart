@@ -5,16 +5,18 @@ class ItemModel extends ItemEntity {
     required String item_id,
     required String user_id,
     required String item_name,
-    required String postType,
+    required bool isLost,
     required String desc,
     required String date,
     required String location,
     required String item_image,
+    required bool isResolved,
   }) : super(
          item_id: item_id,
+         isResolved: isResolved,
          user_id: user_id,
          item_name: item_name,
-         postType: postType,
+         isLost: isLost,
          desc: desc,
          date: date,
          location: location,
@@ -23,27 +25,29 @@ class ItemModel extends ItemEntity {
 
   factory ItemModel.fromJson(Map<String, dynamic> json) {
     return ItemModel(
-      item_id: json['item_id'],
-      user_id: json['user_id'],
-      item_name: json['item_name'],
-      postType: json['postType'],
-      desc: json['desc'],
-      date: json['date'],
-      location: json['location'],
-      item_image: json['item_image'],
+      user_id: json['userId'].toString(),
+      item_name: json['item_name'].toString(),
+      isLost: json['isLost'],
+      desc: json['desc'].toString(),
+      date: json['date'].toString(),
+      location: json['location'].toString(),
+      item_image: json['image'].toString(),
+      isResolved: json['isResolved'],
+      item_id: json['id'].toString(), // <-- Fix here
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'item_id': item_id,
-      'user_id': user_id,
+      'id': item_id,
+      'userId': user_id,
       'item_name': item_name,
-      'postType': postType,
+      'isLost': isLost,
       'desc': desc,
       'date': date,
       'location': location,
-      'item_image': item_image,
+      'image': item_image,
+      'isResolved': isResolved,
     };
   }
 }

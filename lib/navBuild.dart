@@ -1,9 +1,14 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:jihc_landf/src/features/auth/data/repositories/user_repository_impl.dart';
+import 'package:jihc_landf/src/features/auth/presentation/bloc/auth_bloc_bloc.dart';
+import 'package:jihc_landf/src/features/home/data/repositories/itemRepositoryImpl.dart';
+import 'package:jihc_landf/src/features/home/presentation/bloc/item_bloc.dart';
 import 'package:jihc_landf/src/features/home/presentation/pages/home.dart';
 import 'package:jihc_landf/src/features/home/presentation/pages/post.dart';
-import 'package:jihc_landf/src/features/profile/presentation/profile.dart';
-
+import 'package:jihc_landf/src/features/home/presentation/pages/profile.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 class NavBuild extends StatefulWidget {
   const NavBuild({super.key});
 
@@ -199,12 +204,25 @@ class _NavBuildState extends State<NavBuild> {
         ),
       ),
       body:
-          [
+
+      MultiBlocProvider(
+      providers: [
+        BlocProvider<ItemBloc>(
+          create: (_) => ItemBloc(ItemRepositoryImpl(Dio()))
+            ..add(FetchItems()),
+        ),
+        BlocProvider<AuthBlocBloc>(
+          create: (_) => AuthBlocBloc(UserRepositoryImpl()),
+        ),
+      ],
+      child: [
             HomePage(),
             PostPage(),
             Center(child: Text('Chat Page')) ,
             ProfilePage(),
           ][navIndex],
+    ),
+          
     );
   }
 }

@@ -3,12 +3,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:jihc_landf/src/features/auth/data/models/userModel.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/secure_storage.dart';
+import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
 import 'package:jihc_landf/src/features/auth/domain/core/fail.dart';
 import 'package:jihc_landf/src/features/auth/domain/entities/user_entity.dart';
 import 'package:jihc_landf/src/features/auth/domain/repositories/user_repository.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 class UserRepositoryImpl implements UserRepository {
+  ProfileInfo profileInfo = ProfileInfo();
   final dio = Dio();
   @override
   Future<Either<Failure, UserEntityRegister>> register(
@@ -44,20 +46,25 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<Either<Failure, UserEntity>> login(String email, String password) async {
     try{
-      final response = await dio.post('https://jihcservfixed-production.up.railway.app/auth/login',
-      data: {
-        'username': email,
-        'password': password
-      });
+      final response = await dio.post(
+        'https://jihcservfixed-production.up.railway.app/auth/login',
+        data: {
+          'email': email,
+          'password': password
+        },
+      );
       if (response.statusCode == 200) {
-        final accessToken = response.data['accessToken'];
-        final secureStorage = SecureStorage();
-        await secureStorage.writeSecureData('token', accessToken);
-        final user = UserModel.fromJson(response.data['user']);
-        return Right(user);
+        final accessToken = response.data['access_token'];
+        if (accessToken == null) {
+          return Left(Failure(failure: 'No access token returned from server'));
+        }
+        // final secureStorage = SecureStorage();
+        // await secureStorage.writeSecureData('token', accessToken);
+        profileInfo.saveProfileInfo(response.data["userName"], response.data["email"], response.data["userType"], response.data["group"], response.data["userId"], response.data["access_token"]);
+        return Right(UserModel(username: response.data["userName"], userId: response.data["userId"], token: accessToken, email: response.data["email"], userType: response.data["userType"], group: response.data["group"]));
       }
       else{
-        return Left(Failure(failure: 'Failed to register user'));
+        return Left(Failure(failure: 'Failed to login user'));
       }
     }catch (e) {
       return Left(Failure(failure: e.toString()));
@@ -67,8 +74,8 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<Either<Failure, void>> logout() async {
     try {
-      final secureStorage = SecureStorage();
-      await secureStorage.deleteSecureData('token');
+      // final secureStorage = SecureStorage();
+      // await secureStorage.deleteSecureData('token');
       return const Right(null);
     } catch (e) {
       return Left(Failure(failure: e.toString()));
@@ -76,8 +83,8 @@ class UserRepositoryImpl implements UserRepository {
   }
   @override
   Future<bool> isLoggedIn() async {
-    final secureStorage = SecureStorage();
-    String? token = await secureStorage.readSecureData('token');
+    // final secureStorage = SecureStorage();
+    String? token = await profileInfo.getToken();
     if (token != null) {
       return true;
     } else {

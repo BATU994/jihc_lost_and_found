@@ -1,50 +1,79 @@
-// import 'package:dartz/dartz.dart';
-// import 'package:dio/dio.dart';
-// import 'package:flutter/material.dart';
-// import 'package:jihc_landf/src/features/auth/domain/core/fail.dart';
-// import 'package:jihc_landf/src/features/auth/domain/entities/user_entity.dart';
-// import 'package:jihc_landf/src/features/auth/domain/repositories/user_repository.dart';
-// import 'package:flutter/services.dart' show rootBundle;
-// import 'package:jihc_landf/src/features/home/data/models/itemModel.dart';
-// import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
-// import 'package:jihc_landf/src/features/home/domain/repositories/itemRepostory.dart';
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:jihc_landf/src/features/home/domain/core/fail.dart';
+import 'package:jihc_landf/src/features/home/domain/core/success.dart';
+import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
+import 'package:jihc_landf/src/features/home/data/models/itemModel.dart';
+import 'package:jihc_landf/src/features/home/domain/repositories/itemRepostory.dart';
 
-// class ItemRepositoryImpl implements ItemRepository {
-//   final Dio dio;
+class ItemRepositoryImpl implements ItemRepository {
+  final Dio dio;
+  ItemRepositoryImpl(this.dio);
 
-//   ItemRepositoryImpl(this.dio);
+  @override
+  Future<Either<Failure, Success>> addItem(ItemEntityPost item) async {
+    try {
+      final formData = FormData.fromMap({
+        'userId': item.user_id,
+        'item_name': item.item_name,
+        'isLost': item.isLost,
+        'desc': item.desc,
+        'date': item.date,
+        'location': item.location,
+        'image': MultipartFile.fromBytes(item.item_image, filename: 'item.jpg'), // <-- Correct image upload
+        'isResolved': item.isResolved,
+      });
+      final response = await dio.post(
+        'https://jihcservfixed-production.up.railway.app/lostandfound/',
+        data: formData,
+        options: Options(followRedirects: true),
+      );
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        return Left(Failure(failure: 'Failed to add item'));
+      } else {
+        return Right(Success(success: 'Item added successfully'));
+      }
+    } catch (e) {
+      return Left(Failure(failure: e.toString()));
+    }
+  }
 
-//   @override
-//   Future<Either<Failure, ItemEntity>> addItem(ItemEntity item) async {
-//     try {
-//       final response = await dio.post(
-//         '/items',
-//         data: ItemModel.fromEntity(item).toJson(),
-//       );
+  @override
+  Future<Either<Failure, Unit>> updateItem(ItemModel item) async {
+    try {
+      await Future.delayed(Duration(milliseconds: 200));
+      return Right(unit);
+    } catch (e) {
+      return Left(Failure(failure: e.toString()));
+    }
+  }
 
-//       if (response.statusCode == 200 || response.statusCode == 201) {
-//         final newItem = ItemModel.fromJson(response.data);
-//         return Right(newItem.toEntity());
-//       } else {
-//         return Left(Failure(failure: 'Failed to add item'));
-//       }
-//     } catch (e) {
-//       return Left(Failure(failure: e.toString()));
-//     }
-//   }
+  @override
+  Future<Either<Failure, Unit>> deleteItem(String itemId) async {
+    try {
+      final response = await dio.delete('https://jihcservfixed-production.up.railway.app/lostandfound/$itemId'
+      );
+      await Future.delayed(Duration(milliseconds: 200));
+      return Right(unit);
+    } catch (e) {
+      return Left(Failure(failure: e.toString()));
+    }
+  }
 
-//   @override
-//   Future<Either<Failure, ItemModel>> deleteItem(String itemId) async {
-//     throw UnimplementedError();
-//   }
-
-//   @override
-//   Future<Either<Failure, List<ItemModel>>> fetchItems() async {
-//     throw UnimplementedError();
-//   }
-
-//   @override
-//   Future<Either<Failure, ItemModel>> updateItem(ItemModel item) async {
-//     throw UnimplementedError();
-//   }
-// }
+  @override
+  Future<Either<Failure, List<ItemEntity>>> fetchItems() async {
+    try {
+      final response = await dio.get('https://jihcservfixed-production.up.railway.app/lostandfound');
+      if (response.statusCode == 200 && response.data is List) {
+        List<ItemEntity> items = (response.data as List)
+          .map((item) => ItemModel.fromJson(item))
+          .toList();
+        return Right(items);
+      } else {
+        return Left(Failure(failure: 'Failed to fetch items'));
+      }
+    } catch (e) {
+      return Left(Failure(failure: e.toString()));
+    }
+  }
+}

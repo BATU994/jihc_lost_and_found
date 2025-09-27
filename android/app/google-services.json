@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "946407130811",
+    "project_id": "jihclostandfound",
+    "storage_bucket": "jihclostandfound.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946407130811:android:db22bff35f80ab30864b9e",
+        "android_client_info": {
+          "package_name": "com.example.jihc_landf"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmprFkdbRm6fCGboUw9l6ijrpbj8IfW0g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

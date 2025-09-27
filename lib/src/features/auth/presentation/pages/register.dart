@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:jihc_landf/navBuild.dart';
 import 'package:jihc_landf/src/features/auth/presentation/bloc/auth_bloc_bloc.dart';
 import 'package:jihc_landf/src/features/auth/presentation/pages/login.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jihc_landf/src/features/home/presentation/pages/home.dart';
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -203,7 +205,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                   onChanged: (value) {
                                     if (value == null || value.isEmpty) {}
                                     email = value;
-                                    print(email);
                                   },
                                   validator: (value) {
                                     if (value == null ||
@@ -239,7 +240,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
-
                                 SizedBox(height: 10),
                                 TextFormField(
                                   controller: _passwordController,
@@ -287,77 +287,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           ),
                           SizedBox(height: 40),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    // Get latest values from controllers
-                                    name = _nameController.text.trim();
-                                    email = _emailController.text.trim();
-                                    password = _passwordController.text.trim();
-                                    group = _groupController.text.trim();
-
-                                    // Validate all fields
-                                    if (name.isEmpty || email.isEmpty || password.isEmpty || gender.isEmpty || userType.isEmpty || (studentTrue && group.isEmpty)) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('Please fill all fields.'),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    if (_formKey.currentState!.validate()) {
-                                      setState(() {
-                                        buttonColor = Color.fromRGBO(0, 99, 204, 1);
-                                        buttonText = 'REGISTERING...';
-                                      });
-                                      // Debug print the data being sent
-                                      print('Registering with:');
-                                      print('email: $email');
-                                      print('name: $name');
-                                      print('password: $password');
-                                      print('gender: $gender');
-                                      print('group: $group');
-                                      print('userType: $userType');
-                                      context.read<AuthBlocBloc>().add(
-                                        AuthRegisterRequested(
-                                          email: email,
-                                          name: name,
-                                          password: password,
-                                          gender: gender,
-                                          group: group,
-                                          userType: userType,
-                                        ),
-                                      );
-                                      Future.delayed(Duration(seconds: 2), () {
-                                        setState(() {
-                                          buttonColor = Color.fromRGBO(0, 119, 255, 1);
-                                          buttonText = 'SIGN UP';
-                                        });
-                                      });
-                                    }
-                                  },
-                                  child: Text(
-                                    buttonText,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: buttonColor,
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(vertical: 17),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          registerButton(context, _formKey, state),
                           SizedBox(height: 20),
                           Row(
                             children: [
@@ -377,27 +307,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             ],
                           ),
                           SizedBox(height: 20),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const LoginPage(),
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                "Already have an account? Sign in",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.grey[600],
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ),
+                          loginDirect(),
                         ],
                       ),
                     ),
@@ -409,6 +319,84 @@ class _RegisterPageState extends State<RegisterPage> {
         },
       ),
     );
+  }
+
+  Row registerButton(BuildContext context, GlobalKey<FormState> _formKey, AuthBlocState state) {
+    return Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  name = _nameController.text.trim();
+                                  email = _emailController.text.trim();
+                                  password = _passwordController.text.trim();
+                                  group = _groupController.text.trim();
+                                  if (name.isEmpty || email.isEmpty || password.isEmpty || gender.isEmpty || userType.isEmpty || (studentTrue && group.isEmpty)) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Please fill all fields.'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  if (_formKey.currentState!.validate()) {
+                                    setState(() {
+                                      buttonColor = Color.fromRGBO(0, 99, 204, 1);
+                                      buttonText = 'REGISTERING...';
+                                    });
+                                    print('Registering with:');
+                                    print('email: $email');
+                                    print('name: $name');
+                                    print('password: $password');
+                                    print('gender: $gender');
+                                    print('group: $group');
+                                    print('userType: $userType');
+                                    context.read<AuthBlocBloc>().add(
+                                      AuthRegisterRequested(
+                                        email: email,
+                                        name: name,
+                                        password: password,
+                                        gender: gender,
+                                        group: group,
+                                        userType: userType,
+                                      ),
+                                    );
+                                    if (state is AuthBlocSuccess) {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const NavBuild(),
+                                        ),
+                                      );
+                                    }
+                                    Future.delayed(Duration(seconds: 1), () {
+                                      setState(() {
+                                        buttonColor = Color.fromRGBO(0, 119, 255, 1);
+                                        buttonText = 'SIGN UP';
+                                      });
+                                    });
+                                  }
+                                },
+                                child: Text(
+                                  buttonText,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: buttonColor,
+                                  foregroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(vertical: 17),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
   }
 
   Row userClass() {
@@ -556,6 +544,37 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class loginDirect extends StatelessWidget {
+  const loginDirect({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: TextButton(
+        onPressed: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginPage(),
+            ),
+          );
+        },
+        child: Text(
+          "Already have an account? Sign in",
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.grey[600],
+            decoration: TextDecoration.underline,
+          ),
+        ),
+      ),
     );
   }
 }
