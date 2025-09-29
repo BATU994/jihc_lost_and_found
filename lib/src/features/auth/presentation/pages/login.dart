@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jihc_landf/navBuild.dart';
-import 'package:jihc_landf/src/features/auth/data/repositories/secure_storage.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/user_repository_impl.dart';
 import 'package:jihc_landf/src/features/auth/presentation/bloc/auth_bloc_bloc.dart';
 import 'package:jihc_landf/src/features/auth/presentation/pages/register.dart';
 import 'package:jihc_landf/src/features/home/data/repositories/itemRepositoryImpl.dart';
 import 'package:jihc_landf/src/features/home/presentation/bloc/item_bloc.dart';
-import 'package:jihc_landf/src/features/home/presentation/pages/home.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 
@@ -21,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  void _initState() {
+  void initState() {
     super.initState();
     _passwordVisible = false;
   }
@@ -31,12 +29,19 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
     final _formKey = GlobalKey<FormState>();
     Color buttonColor = Color.fromRGBO(0, 119, 255, 1);
     String buttonText = 'SIGN IN';
     return Scaffold(
-      body: BlocBuilder<AuthBlocBloc, AuthBlocState>(
+      body: BlocConsumer<AuthBlocBloc, AuthBlocState>(
+        listener: (context, state) {
+          if (state is AuthBlocAuthenticated) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const NavBuild()),
+            );
+          }
+        },
         builder: (context, state) {
           String? errorMsg;
           if (state is AuthFailed) {
@@ -121,12 +126,14 @@ class _LoginPageState extends State<LoginPage> {
                           TextFormField(
                             controller: _emailController,
                             validator: (value) {
-                              if (value!.isEmpty ||
-                                  RegExp(
-                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}\$',
-                                  ).hasMatch(value!)) {
+                              final v = value ?? '';
+                              // Correct email regex (no literal $ at end)
+                              final ok = RegExp(
+                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$',
+                              ).hasMatch(v);
+                              if (v.isEmpty || !ok)
                                 return 'Please enter a valid email';
-                              }
+                              return null;
                             },
                             decoration: InputDecoration(
                               hintText: 'Email',
@@ -190,10 +197,6 @@ class _LoginPageState extends State<LoginPage> {
                                   onPressed: () {
                                     email = _emailController.text.trim();
                                     password = _passwordController.text.trim();
-                                    print({
-                                      "username": email,
-                                      "password": password,
-                                    });
                                     if (_formKey.currentState!.validate()) {
                                       setState(() {
                                         buttonColor = Color.fromRGBO(
@@ -211,31 +214,6 @@ class _LoginPageState extends State<LoginPage> {
                                           password: password,
                                         ),
                                       );
-                                      if (context.read<AuthBlocBloc>().state
-                                          is AuthBlocAuthenticated) {
-                                        MultiBlocProvider(
-                                          providers: [
-                                            BlocProvider<ItemBloc>(
-                                              create: (_) => ItemBloc(ItemRepositoryImpl(Dio()))
-                                                ..add(FetchItems()),
-                                            ),
-                                            BlocProvider<AuthBlocBloc>(
-                                              create: (_) => AuthBlocBloc(UserRepositoryImpl()),
-                                            ),
-                                          ],
-                                          child: NavBuild(),
-                                        );
-                                        // SecureStorage secureStorage =
-                                        //     SecureStorage();
-                                        // print(
-                                        //   secureStorage.readSecureData(
-                                        //             'token',
-                                        //           ) !=
-                                        //           null
-                                        //       ? true
-                                        //       : false,
-                                        // );
-                                      }
                                     }
                                   },
                                   child: Text(
@@ -313,19 +291,25 @@ class _LoginPageState extends State<LoginPage> {
                             MaterialPageRoute(
                               builder:
                                   (context) => MultiBlocProvider(
-      providers: [
-        BlocProvider<ItemBloc>(
-          create: (_) => ItemBloc(ItemRepositoryImpl(Dio()))
-            ..add(FetchItems()), // fetch items immediately
-        ),
-        BlocProvider<AuthBlocBloc>(
-          create: (_) => AuthBlocBloc(UserRepositoryImpl()),
-        ),
-      ],
-      child: RegisterPage(),
-    ),
+                                    providers: [
+                                      BlocProvider<ItemBloc>(
+                                        create:
+                                            (_) => ItemBloc(
+                                              ItemRepositoryImpl(Dio()),
+                                            )..add(
+                                              FetchItems(),
+                                            ), // fetch items immediately
+                                      ),
+                                      BlocProvider<AuthBlocBloc>(
+                                        create:
+                                            (_) => AuthBlocBloc(
+                                              UserRepositoryImpl(),
+                                            ),
+                                      ),
+                                    ],
+                                    child: RegisterPage(),
                                   ),
-                            
+                            ),
                           );
                         },
                         child: Text(

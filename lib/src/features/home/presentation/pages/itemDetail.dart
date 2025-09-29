@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
+import 'package:jihc_landf/src/features/chat/data/repository/repositoryImpl.dart';
+import 'package:jihc_landf/src/core/datasources.dart';
+import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
+import 'package:jihc_landf/src/features/chat/presentation/pages/chat_detail.dart';
 
 class ItemDetailPage extends StatelessWidget {
   final ItemEntity item;
@@ -60,9 +64,13 @@ class ItemDetailPage extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: item.isLost ? Colors.red[100] : Colors.green[100],
+                        color:
+                            item.isLost ? Colors.red[100] : Colors.green[100],
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
@@ -114,7 +122,11 @@ class ItemDetailPage extends StatelessWidget {
                       SizedBox(height: 12),
                       Row(
                         children: [
-                          Icon(Icons.calendar_today, color: Colors.grey[700], size: 20),
+                          Icon(
+                            Icons.calendar_today,
+                            color: Colors.grey[700],
+                            size: 20,
+                          ),
                           SizedBox(width: 8),
                           Text(
                             item.date,
@@ -136,24 +148,26 @@ class ItemDetailPage extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundImage: AssetImage('assets/user_placeholder.png'), 
+                      backgroundImage: AssetImage(
+                        'assets/user_placeholder.png',
+                      ),
                     ),
                     SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        item.user_id ?? 'Unknown User',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        item.user_id,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                    Text(
-                      '5 hours ago', 
-                      style: TextStyle(color: Colors.grey),
-                    ),
+                    Text('5 hours ago', style: TextStyle(color: Colors.grey)),
                   ],
                 ),
               ),
-              SizedBox(height: 32),//
-              
+              SizedBox(height: 32), //
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: SizedBox(
@@ -166,15 +180,51 @@ class ItemDetailPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(100),
                       ),
                     ),
-                    onPressed: () {
-
+                    onPressed: () async {
+                      final currentIdStr = await ProfileInfo().getId();
+                      final currentUserId = int.tryParse(currentIdStr ?? '0');
+                      final ownerId = int.tryParse(item.user_id);
+                      if (currentUserId == null ||
+                          ownerId == null ||
+                          currentUserId == 0 ||
+                          ownerId == 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('User info missing')),
+                        );
+                        return;
+                      }
+                      try {
+                        final repo = ChatRepositoryImpl(ApiClient());
+                        final chat = await repo.createChat(
+                          currentUserId,
+                          ownerId,
+                        );
+                        if (!context.mounted) return;
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder:
+                                (_) => ChatDetailPage(
+                                  chatId: chat.id,
+                                  title: 'User ${ownerId}',
+                                  currentUserId: currentUserId,
+                                ),
+                          ),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Failed to create chat: $e')),
+                        );
+                      }
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Row(
                           children: [
-                            SvgPicture.asset('assets/chat.svg', color: Colors.white),
+                            SvgPicture.asset(
+                              'assets/chat.svg',
+                              color: Colors.white,
+                            ),
                             SizedBox(width: 12),
                             Text(
                               'THIS IS MINE',
