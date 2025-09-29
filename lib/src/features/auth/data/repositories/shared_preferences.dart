@@ -1,13 +1,13 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileInfo {
-  Future<void> saveProfileInfo(String username, String email, String userType, String group, int userId, String token) async {
+  Future<void> saveProfileInfo(String username, String email, String userType, String group, String userId, String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('username', username);
     await prefs.setString('email', email);
     await prefs.setString('userType', userType);
     await prefs.setString('group', group);
-    await prefs.setInt('userId', userId);
+    await prefs.setString('userId', userId);
     await prefs.setString('token', token);
   }
 
@@ -18,12 +18,12 @@ class ProfileInfo {
       'email': prefs.getString('email'),
       'userType': prefs.getString('userType'),
       'group': prefs.getString('group'),
-      'userId': prefs.getInt('userId'),
+      'userId': prefs.getString('userId'),
     };
   }
   Future<String?> getId() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt('userId')?.toString();
+    return prefs.getString('userId');
   }
 
   Future<String?> getToken() async {
