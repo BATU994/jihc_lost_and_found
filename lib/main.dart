@@ -10,8 +10,12 @@ import 'package:jihc_landf/src/features/home/data/repositories/itemRepositoryImp
 import 'package:jihc_landf/src/features/home/presentation/bloc/item_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:jihc_landf/src/features/chat/presentation/pages/chatList.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final dio = Dio();
 
   runApp(

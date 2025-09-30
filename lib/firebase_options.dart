@@ -44,13 +44,13 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAQ11oUdwJphD612AflvjqoPx0m2bZ7VeE',
-    appId: '1:946407130811:web:ec4502e52b849523864b9e',
-    messagingSenderId: '946407130811',
-    projectId: 'jihclostandfound',
-    authDomain: 'jihclostandfound.firebaseapp.com',
-    storageBucket: 'jihclostandfound.firebasestorage.app',
-    measurementId: 'G-FNMHLWVTZQ',
+    apiKey: 'AIzaSyCcOeOXkJkPTvx62YPL1QfTUIfBVfk_YLM',
+    appId: '1:553625297259:web:8646e54888b35fd1262c2e',
+    messagingSenderId: '553625297259',
+    projectId: 'jihc-lostandfound',
+    authDomain: 'jihc-lostandfound.firebaseapp.com',
+    storageBucket: 'jihc-lostandfound.firebasestorage.app',
+    measurementId: 'G-G1X1C25D5E',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
