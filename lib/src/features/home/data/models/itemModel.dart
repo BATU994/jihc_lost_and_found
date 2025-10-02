@@ -2,26 +2,16 @@ import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
 
 class ItemModel extends ItemEntity {
   ItemModel({
-    required String item_id,
-    required String user_id,
-    required String item_name,
-    required bool isLost,
-    required String desc,
-    required String date,
-    required String location,
-    required String item_image,
-    required bool isResolved,
-  }) : super(
-         item_id: item_id,
-         isResolved: isResolved,
-         user_id: user_id,
-         item_name: item_name,
-         isLost: isLost,
-         desc: desc,
-         date: date,
-         location: location,
-         item_image: item_image,
-       );
+    required super.item_id,
+    required super.user_id,
+    required super.item_name,
+    required super.isLost,
+    required super.desc,
+    required super.date,
+    required super.location,
+    required super.item_image,
+    required super.isResolved,
+  });
 
   factory ItemModel.fromJson(Map<String, dynamic> json) {
     return ItemModel(

@@ -25,7 +25,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -44,39 +47,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCcOeOXkJkPTvx62YPL1QfTUIfBVfk_YLM',
-    appId: '1:553625297259:web:8646e54888b35fd1262c2e',
-    messagingSenderId: '553625297259',
-    projectId: 'jihc-lostandfound',
-    authDomain: 'jihc-lostandfound.firebaseapp.com',
-    storageBucket: 'jihc-lostandfound.firebasestorage.app',
-    measurementId: 'G-G1X1C25D5E',
-  );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCmprFkdbRm6fCGboUw9l6ijrpbj8IfW0g',
-    appId: '1:946407130811:android:db22bff35f80ab30864b9e',
-    messagingSenderId: '946407130811',
-    projectId: 'jihclostandfound',
-    storageBucket: 'jihclostandfound.firebasestorage.app',
+    apiKey: 'AIzaSyCBCRMyyh5I7zQILBDsMTZSY9cWCeNf-Z4',
+    appId: '1:333941493755:web:106b4cec1fd148660c055e',
+    messagingSenderId: '333941493755',
+    projectId: 'jihc-lostandfound-hosting',
+    authDomain: 'jihc-lostandfound-hosting.firebaseapp.com',
+    storageBucket: 'jihc-lostandfound-hosting.firebasestorage.app',
+    measurementId: 'G-TPMSVYGV9J',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB9lVSaTS7ALSjEft3_AnzaVMenD61oB1Q',
-    appId: '1:946407130811:ios:9300eab22fb4e5d4864b9e',
-    messagingSenderId: '946407130811',
-    projectId: 'jihclostandfound',
-    storageBucket: 'jihclostandfound.firebasestorage.app',
+    apiKey: 'AIzaSyDRM1l9zKnAHkJBbwFW4D7lLEhGZOeh_aM',
+    appId: '1:333941493755:ios:9bfb66a3262554540c055e',
+    messagingSenderId: '333941493755',
+    projectId: 'jihc-lostandfound-hosting',
+    storageBucket: 'jihc-lostandfound-hosting.firebasestorage.app',
     iosBundleId: 'com.example.jihcLandf',
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyB9lVSaTS7ALSjEft3_AnzaVMenD61oB1Q',
-    appId: '1:946407130811:ios:9300eab22fb4e5d4864b9e',
-    messagingSenderId: '946407130811',
-    projectId: 'jihclostandfound',
-    storageBucket: 'jihclostandfound.firebasestorage.app',
-    iosBundleId: 'com.example.jihcLandf',
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyBu1o_ht2stt1JTjiL3MyzvEysAmNglTO0',
+    appId: '1:333941493755:android:8092508c492445040c055e',
+    messagingSenderId: '333941493755',
+    projectId: 'jihc-lostandfound-hosting',
+    storageBucket: 'jihc-lostandfound-hosting.firebasestorage.app',
   );
 
 }

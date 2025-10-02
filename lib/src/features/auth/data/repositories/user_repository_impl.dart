@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/features/auth/data/models/userModel.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
 import 'package:jihc_landf/src/features/auth/domain/core/fail.dart';
@@ -20,7 +21,7 @@ class UserRepositoryImpl implements UserRepository {
   ) async {
     try {
       final response = await dio.post(
-        'https://jihcservfixed-production.up.railway.app/auth/register',
+        '${ApiClient.defaultBaseUrl}/auth/register',
         data: {
           'email': email,
           'name': username,
@@ -55,7 +56,7 @@ class UserRepositoryImpl implements UserRepository {
   ) async {
     try {
       final response = await dio.post(
-        'https://jihcservfixed-production.up.railway.app/auth/login',
+        '${ApiClient.defaultBaseUrl}/auth/login',
         data: {'email': email, 'password': password},
       );
       if (response.statusCode == 200) {
@@ -68,7 +69,7 @@ class UserRepositoryImpl implements UserRepository {
           response.data["email"],
           response.data["userType"],
           response.data["group"],
-          (response.data["userId"]).toString(),
+          response.data["userId"],
           response.data["access_token"],
         );
         return Right(

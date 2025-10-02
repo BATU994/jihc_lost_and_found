@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/features/home/data/models/itemModel.dart';
 import 'package:jihc_landf/src/features/home/presentation/pages/itemDetail.dart';
 
@@ -25,7 +26,7 @@ Widget itemRectangle(BuildContext context,ItemModel itemModel) {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.network(
-                    'https://jihcservfixed-production.up.railway.app${itemModel.item_image}',
+                    ApiClient.defaultBaseUrl + itemModel.item_image,
                     width: 60,
                     fit: BoxFit.fitHeight,
                   ),
@@ -137,7 +138,7 @@ Widget itemSquare(BuildContext context, ItemModel itemModel) {
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.network(
-                  'https://jihcservfixed-production.up.railway.app${itemModel.item_image}',
+                  ApiClient.defaultBaseUrl + itemModel.item_image,
                   width: double.infinity,
                   height: 160,
                   fit: BoxFit.cover,

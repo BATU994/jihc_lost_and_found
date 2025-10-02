@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
+// Removed UsernameBloc usage for now; fallback titles are used
 import '../../data/repository/repositoryImpl.dart';
 import '../bloc/chat_list_cubit.dart';
 import '../bloc/chat_messages_cubit.dart';
@@ -13,11 +14,16 @@ class ChatListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create:
-          (_) =>
-              ChatListCubit(ChatRepositoryImpl(ApiClient()))
-                ..load(currentUserId),
+    // No eager username fetching here; resolve names lazily or display a fallback
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create:
+              (_) =>
+                  ChatListCubit(ChatRepositoryImpl(ApiClient()))
+                    ..load(currentUserId),
+        ),
+      ],
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -88,7 +94,6 @@ class ChatListPage extends StatelessWidget {
                         (id) => id != currentUserId,
                         orElse: () => chat.userIds.first,
                       );
-
                       return ListTile(
                         onTap:
                             () => Navigator.of(context).push(

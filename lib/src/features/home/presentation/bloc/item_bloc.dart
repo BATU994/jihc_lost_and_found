@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:jihc_landf/src/features/home/data/repositories/itemRepositoryImpl.dart';
 import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
-import 'package:jihc_landf/src/features/home/domain/repositories/itemRepostory.dart';
 import 'package:jihc_landf/src/features/home/presentation/utils/filter.dart';
 import 'package:meta/meta.dart';
 
@@ -16,16 +15,12 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     on<FetchItems>((event, emit) async {
       emit(ItemLoading());
       final result = await repository.fetchItems();
-      result.fold(
-        (failure) => emit(ItemError(failure.failure)),
-        (items) async {
-          _allItems = items;
-          emit(ItemLoaded(items, Filter.all));
-        },
-      );
+      result.fold((failure) => emit(ItemError(failure.failure)), (items) async {
+        _allItems = items;
+        emit(ItemLoaded(items, Filter.all));
+      });
     });
 
-    
     on<PostItemRequested>((event, emit) async {
       emit(ItemLoading());
       final result = await repository.addItem(event.item);
@@ -37,13 +32,11 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     on<FetchUserItems>((event, emit) async {
       emit(ItemLoading());
       final result = await repository.fetchItems();
-      result.fold(
-        (failure) => emit(ItemError(failure.failure)),
-        (items) {
-          final userItems = items.where((item) => item.user_id == event.userId).toList();
-          emit(ItemLoaded(userItems, Filter.all));
-        },
-      );
+      result.fold((failure) => emit(ItemError(failure.failure)), (items) {
+        final userItems =
+            items.where((item) => item.user_id == event.userId).toList();
+        emit(ItemLoaded(userItems, Filter.all));
+      });
     });
 
     on<DeleteItem>((event, emit) async {
@@ -55,13 +48,12 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
         },
         (_) async {
           final fetchResult = await repository.fetchItems();
-          fetchResult.fold(
-            (failure) => emit(ItemError(failure.failure)),
-            (items) {
-              _allItems = items;
-              emit(ItemLoaded(items, Filter.all));
-            },
-          );
+          fetchResult.fold((failure) => emit(ItemError(failure.failure)), (
+            items,
+          ) {
+            _allItems = items;
+            emit(ItemLoaded(items, Filter.all));
+          });
         },
       );
     });

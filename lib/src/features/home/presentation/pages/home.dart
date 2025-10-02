@@ -1,9 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jihc_landf/src/features/home/data/models/itemModel.dart';
-import 'package:jihc_landf/src/features/home/data/repositories/itemRepositoryImpl.dart';
 import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
 import 'package:jihc_landf/src/features/home/presentation/bloc/item_bloc.dart';
 import 'package:jihc_landf/src/features/home/presentation/utils/filter.dart';
@@ -27,94 +24,101 @@ class _HomePageState extends State<HomePage> {
     searchController.addListener(() {
       setState(() {});
     });
+    // Refresh items whenever HomePage opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<ItemBloc>().add(FetchItems());
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  search(),
-                  SizedBox(height: 20),
-                  filter(),
-                  SizedBox(height: 20),
-                  BlocBuilder<ItemBloc, ItemState>(
-                    builder: (context, state) {
-                      if (state is ItemLoading) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (state is ItemLoaded) {
-                      } else if (state is ItemError) {
-                        return Center(
-                          child: Text(
-                            'Failed to load items.',
-                            style: TextStyle(fontSize: 18, color: Colors.red),
-                          ),
-                        );
-                      }
-                      return BlocBuilder<ItemBloc, ItemState>(
-                        builder: (context, state) {
-                          if (state is ItemError) {
-                            Center(child: Text('Error Fetching data'));
-                          } else if (state is ItemLoading) {
-                            Center(child: CircularProgressIndicator());
-                          } else if (state is ItemLoaded) {
-                            List<ItemEntity> filteredItems;
-                            switch (selectedFilter) {
-                              case Filter.lost:
-                                filteredItems =
-                                    state.items
-                                        .where((item) => item.isLost)
-                                        .toList();
-                                break;
-                              case Filter.found:
-                                filteredItems =
-                                    state.items
-                                        .where((item) => !item.isLost)
-                                        .toList();
-                                break;
-                              case Filter.all:
-                              default:
-                                filteredItems = state.items;
-                            }
-
-                            return GridView.builder(
-                              itemCount: filteredItems.length,
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: squareLayout ? 2 : 1,
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 10,
-                                    childAspectRatio: squareLayout ? 0.6 : 3.5,
-                                  ),
-                              itemBuilder: (context, index) {
-                                final item = filteredItems[index];
-                                return GestureDetector(
-                                  onTap: () {},
-                                  child:
-                                      squareLayout
-                                          ? itemSquare(context, item as ItemModel)
-                                          : itemRectangle(context , item as ItemModel),
-                                );
-                              },
-                            );
-                          }
-                          return Text('Something went wrong');
-                        },
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                search(),
+                SizedBox(height: 20),
+                filter(),
+                SizedBox(height: 20),
+                BlocBuilder<ItemBloc, ItemState>(
+                  builder: (context, state) {
+                    if (state is ItemLoading) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (state is ItemLoaded) {
+                    } else if (state is ItemError) {
+                      return Center(
+                        child: Text(
+                          'Failed to load items.',
+                          style: TextStyle(fontSize: 18, color: Colors.red),
+                        ),
                       );
-                    },
-                  ),
-                ],
-              ),
+                    }
+                    return BlocBuilder<ItemBloc, ItemState>(
+                      builder: (context, state) {
+                        if (state is ItemError) {
+                          Center(child: Text('Error Fetching data'));
+                        } else if (state is ItemLoading) {
+                          Center(child: CircularProgressIndicator());
+                        } else if (state is ItemLoaded) {
+                          List<ItemEntity> filteredItems;
+                          switch (selectedFilter) {
+                            case Filter.lost:
+                              filteredItems =
+                                  state.items
+                                      .where((item) => item.isLost)
+                                      .toList();
+                              break;
+                            case Filter.found:
+                              filteredItems =
+                                  state.items
+                                      .where((item) => !item.isLost)
+                                      .toList();
+                              break;
+                            case Filter.all:
+                              filteredItems = state.items;
+                          }
+
+                          return GridView.builder(
+                            itemCount: filteredItems.length,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: squareLayout ? 2 : 1,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                  childAspectRatio: squareLayout ? 0.6 : 3.5,
+                                ),
+                            itemBuilder: (context, index) {
+                              final item = filteredItems[index];
+                              return GestureDetector(
+                                onTap: () {},
+                                child:
+                                    squareLayout
+                                        ? itemSquare(context, item as ItemModel)
+                                        : itemRectangle(
+                                          context,
+                                          item as ItemModel,
+                                        ),
+                              );
+                            },
+                          );
+                        }
+                        return Text('Something went wrong');
+                      },
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),
-      
+      ),
     );
   }
 
@@ -309,7 +313,7 @@ class _HomePageState extends State<HomePage> {
                       width: 37,
                       height: 37,
                     ),
-                   ),
+                  ),
                 ),
               ],
             ),

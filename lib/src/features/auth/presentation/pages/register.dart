@@ -5,6 +5,7 @@ import 'package:jihc_landf/src/features/auth/presentation/bloc/auth_bloc_bloc.da
 import 'package:jihc_landf/src/features/auth/presentation/pages/login.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jihc_landf/src/features/home/presentation/pages/home.dart';
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -36,7 +37,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       body: BlocConsumer<AuthBlocBloc, AuthBlocState>(
@@ -87,13 +88,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     SizedBox(height: 30),
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Form(
-                            key: _formKey,
+                            key: formKey,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -128,7 +129,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                             if (value!.isEmpty ||
                                                 !RegExp(
                                                   r'^[A-Z 0-9]+$',
-                                                ).hasMatch(value!)) {
+                                                ).hasMatch(value)) {
                                               return 'Please enter a valid group (e.g., 3F1, 1F3)';
                                             } else {
                                               return null;
@@ -174,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     if (value!.isEmpty ||
                                         RegExp(
                                           r'^[a-z A-Z] + [a-z A-Z]+$',
-                                        ).hasMatch(value!)) {
+                                        ).hasMatch(value)) {
                                       return 'Please enter your name properly';
                                     }
                                     return null;
@@ -203,7 +204,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 TextFormField(
                                   controller: _emailController,
                                   onChanged: (value) {
-                                    if (value == null || value.isEmpty) {}
+                                    if (value.isEmpty) {}
                                     email = value;
                                   },
                                   validator: (value) {
@@ -211,7 +212,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                         value.isEmpty ||
                                         !RegExp(
                                           r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                        ).hasMatch(value!)) {
+                                        ).hasMatch(value)) {
                                       return 'Please enter a valid email address';
                                     }
                                     return null;
@@ -287,7 +288,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           ),
                           SizedBox(height: 40),
-                          registerButton(context, _formKey, state),
+                          registerButton(context, formKey, state),
                           SizedBox(height: 20),
                           Row(
                             children: [
@@ -321,82 +322,86 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Row registerButton(BuildContext context, GlobalKey<FormState> _formKey, AuthBlocState state) {
+  Row registerButton(
+    BuildContext context,
+    GlobalKey<FormState> formKey,
+    AuthBlocState state,
+  ) {
     return Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  name = _nameController.text.trim();
-                                  email = _emailController.text.trim();
-                                  password = _passwordController.text.trim();
-                                  group = _groupController.text.trim();
-                                  if (name.isEmpty || email.isEmpty || password.isEmpty || gender.isEmpty || userType.isEmpty || (studentTrue && group.isEmpty)) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Please fill all fields.'),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                    return;
-                                  }
-                                  if (_formKey.currentState!.validate()) {
-                                    setState(() {
-                                      buttonColor = Color.fromRGBO(0, 99, 204, 1);
-                                      buttonText = 'REGISTERING...';
-                                    });
-                                    print('Registering with:');
-                                    print('email: $email');
-                                    print('name: $name');
-                                    print('password: $password');
-                                    print('gender: $gender');
-                                    print('group: $group');
-                                    print('userType: $userType');
-                                    context.read<AuthBlocBloc>().add(
-                                      AuthRegisterRequested(
-                                        email: email,
-                                        name: name,
-                                        password: password,
-                                        gender: gender,
-                                        group: group,
-                                        userType: userType,
-                                      ),
-                                    );
-                                    if (state is AuthBlocSuccess) {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => const NavBuild(),
-                                        ),
-                                      );
-                                    }
-                                    Future.delayed(Duration(seconds: 1), () {
-                                      setState(() {
-                                        buttonColor = Color.fromRGBO(0, 119, 255, 1);
-                                        buttonText = 'SIGN UP';
-                                      });
-                                    });
-                                  }
-                                },
-                                child: Text(
-                                  buttonText,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: buttonColor,
-                                  foregroundColor: Colors.white,
-                                  padding: EdgeInsets.symmetric(vertical: 17),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () {
+              name = _nameController.text.trim();
+              email = _emailController.text.trim();
+              password = _passwordController.text.trim();
+              group = _groupController.text.trim();
+              if (name.isEmpty ||
+                  email.isEmpty ||
+                  password.isEmpty ||
+                  gender.isEmpty ||
+                  userType.isEmpty ||
+                  (studentTrue && group.isEmpty)) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Please fill all fields.'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+              if (formKey.currentState!.validate()) {
+                setState(() {
+                  buttonColor = Color.fromRGBO(0, 99, 204, 1);
+                  buttonText = 'REGISTERING...';
+                });
+                print('Registering with:');
+                print('email: $email');
+                print('name: $name');
+                print('password: $password');
+                print('gender: $gender');
+                print('group: $group');
+                print('userType: $userType');
+                context.read<AuthBlocBloc>().add(
+                  AuthRegisterRequested(
+                    email: email,
+                    name: name,
+                    password: password,
+                    gender: gender,
+                    group: group,
+                    userType: userType,
+                  ),
+                );
+                if (state is AuthBlocSuccess) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const NavBuild()),
+                  );
+                }
+                Future.delayed(Duration(seconds: 1), () {
+                  setState(() {
+                    buttonColor = Color.fromRGBO(0, 119, 255, 1);
+                    buttonText = 'SIGN UP';
+                  });
+                });
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: buttonColor,
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(vertical: 17),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+            child: Text(
+              buttonText,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Row userClass() {
@@ -484,17 +489,16 @@ class _RegisterPageState extends State<RegisterPage> {
               setState(() {
                 gender = 'male';
               });
-              print(gender);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor:
                   gender == 'male'
-                      ? Color.fromRGBO(228, 238, 253, 1)
-                      : Color.fromRGBO(253, 251, 253, 1),
+                      ? Color.fromRGBO(228, 238, 253, 1) // active color
+                      : Color.fromRGBO(253, 251, 253, 1), // inactive
               foregroundColor:
                   gender == 'male'
-                      ? Color.fromRGBO(0, 119, 255, 1)
-                      : Color.fromRGBO(127, 125, 124, 1),
+                      ? Color.fromRGBO(0, 119, 255, 1) // active text
+                      : Color.fromRGBO(127, 125, 124, 1), // inactive text
               padding: EdgeInsets.symmetric(vertical: 15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
@@ -517,25 +521,24 @@ class _RegisterPageState extends State<RegisterPage> {
               setState(() {
                 gender = 'female';
               });
-              print(gender);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor:
                   gender == 'female'
-                      ? Color.fromRGBO(253, 251, 253, 1)
-                      : Color.fromRGBO(228, 238, 253, 1),
+                      ? Color.fromRGBO(228, 238, 253, 1) // active
+                      : Color.fromRGBO(253, 251, 253, 1), // inactive
               foregroundColor:
                   gender == 'female'
-                      ? Color.fromRGBO(127, 125, 124, 1)
-                      : Color.fromRGBO(0, 119, 255, 1),
+                      ? Color.fromRGBO(0, 119, 255, 1) // active
+                      : Color.fromRGBO(127, 125, 124, 1), // inactive
               padding: EdgeInsets.symmetric(vertical: 15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
                 side: BorderSide(
                   color:
                       gender == 'female'
-                          ? Color.fromRGBO(236, 234, 233, 1)
-                          : Color.fromRGBO(0, 119, 255, 1),
+                          ? Color.fromRGBO(0, 119, 255, 1)
+                          : Color.fromRGBO(236, 234, 233, 1),
                   width: 1.5,
                 ),
               ),
@@ -549,9 +552,7 @@ class _RegisterPageState extends State<RegisterPage> {
 }
 
 class loginDirect extends StatelessWidget {
-  const loginDirect({
-    super.key,
-  });
+  const loginDirect({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -561,9 +562,7 @@ class loginDirect extends StatelessWidget {
         onPressed: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (context) => const LoginPage(),
-            ),
+            MaterialPageRoute(builder: (context) => const LoginPage()),
           );
         },
         child: Text(
@@ -578,4 +577,3 @@ class loginDirect extends StatelessWidget {
     );
   }
 }
-

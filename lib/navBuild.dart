@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:jihc_landf/src/core/userName/bloc/username_bloc.dart';
+import 'package:jihc_landf/src/core/userName/data/repository/UserNameRepositoryImpl.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/user_repository_impl.dart';
 import 'package:jihc_landf/src/features/auth/presentation/bloc/auth_bloc_bloc.dart';
 import 'package:jihc_landf/src/features/home/data/repositories/itemRepositoryImpl.dart';
@@ -45,6 +47,8 @@ class _NavBuildState extends State<NavBuild> {
                     setState(() {
                       navIndex = 0;
                     });
+                    // Refresh items when navigating back to Home tab
+                    context.read<ItemBloc>().add(FetchItems());
                   },
                   child: AnimatedContainer(
                     duration: Duration(milliseconds: 150),
@@ -215,6 +219,9 @@ class _NavBuildState extends State<NavBuild> {
           ),
           BlocProvider<AuthBlocBloc>(
             create: (_) => AuthBlocBloc(UserRepositoryImpl()),
+          ),
+          BlocProvider<UsernameBloc>(
+            create: (_) => UsernameBloc(UserNameRepositoryImpl(Dio())),
           ),
         ],
         child:

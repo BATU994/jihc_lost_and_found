@@ -3,10 +3,19 @@
     "platforms": {
       "dart": {
         "lib/firebase_options.dart": {
-          "projectId": "jihc-lostandfound",
+          "projectId": "jihc-lostandfound-hosting",
           "configurations": {
-            "web": "1:553625297259:web:8646e54888b35fd1262c2e"
+            "android": "1:333941493755:android:8092508c492445040c055e",
+            "ios": "1:333941493755:ios:9bfb66a3262554540c055e",
+            "web": "1:333941493755:web:106b4cec1fd148660c055e"
           }
+        }
+      },
+      "android": {
+        "default": {
+          "projectId": "jihc-lostandfound-hosting",
+          "appId": "1:333941493755:android:8092508c492445040c055e",
+          "fileOutput": "android/app/google-services.json"
         }
       }
     }

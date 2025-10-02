@@ -20,3 +20,8 @@ class DeleteItem extends ItemEvent {
   final String itemId;
   DeleteItem(this.itemId);
 }
+
+class FetchUserName extends ItemEvent {
+  final String userId;
+  FetchUserName(this.userId);
+}

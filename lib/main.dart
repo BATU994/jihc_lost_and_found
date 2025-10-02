@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jihc_landf/navBuild.dart';
+import 'package:jihc_landf/src/core/userName/bloc/username_bloc.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
 import 'package:jihc_landf/src/features/auth/presentation/pages/login.dart';
 import 'package:jihc_landf/src/features/auth/presentation/bloc/auth_bloc_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:dio/dio.dart';
 import 'package:jihc_landf/src/features/chat/presentation/pages/chatList.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:jihc_landf/src/core/userName/data/repository/UserNameRepositoryImpl.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +32,9 @@ void main() async {
         BlocProvider<AuthBlocBloc>(
           create: (_) => AuthBlocBloc(UserRepositoryImpl()),
         ),
+        BlocProvider<UsernameBloc>(
+          create: (_) => UsernameBloc(UserNameRepositoryImpl(dio)),
+        ),
       ],
       child: MyApp(),
     ),
@@ -37,6 +42,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

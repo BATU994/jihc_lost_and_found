@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
 import 'package:jihc_landf/src/features/chat/data/repository/repositoryImpl.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
 import 'package:jihc_landf/src/features/chat/presentation/pages/chat_detail.dart';
+import 'package:jihc_landf/src/features/chat/presentation/bloc/chat_messages_cubit.dart';
 
 class ItemDetailPage extends StatelessWidget {
   final ItemEntity item;
-  ItemDetailPage({super.key, required this.item});
+  const ItemDetailPage({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -193,6 +195,14 @@ class ItemDetailPage extends StatelessWidget {
                         );
                         return;
                       }
+                      if (currentUserId == ownerId) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('You cannot chat with yourself'),
+                          ),
+                        );
+                        return;
+                      }
                       try {
                         final repo = ChatRepositoryImpl(ApiClient());
                         final chat = await repo.createChat(
@@ -203,10 +213,16 @@ class ItemDetailPage extends StatelessWidget {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder:
-                                (_) => ChatDetailPage(
-                                  chatId: chat.id,
-                                  title: 'User ${ownerId}',
-                                  currentUserId: currentUserId,
+                                (_) => BlocProvider(
+                                  create:
+                                      (_) => ChatMessagesCubit(
+                                        ChatRepositoryImpl(ApiClient()),
+                                      )..load(chat.id),
+                                  child: ChatDetailPage(
+                                    chatId: chat.id,
+                                    title: 'User ${ownerId.toString()}',
+                                    currentUserId: currentUserId,
+                                  ),
                                 ),
                           ),
                         );

@@ -19,3 +19,7 @@ class ItemError extends ItemState {
 
 class ItemPosted extends ItemState {}
 
+class UserNameFetched extends ItemState {
+  final String userName;
+  UserNameFetched(this.userName);
+}

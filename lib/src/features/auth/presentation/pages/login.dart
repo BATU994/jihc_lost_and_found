@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  @override
   void initState() {
     super.initState();
     _passwordVisible = false;
@@ -29,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     Color buttonColor = Color.fromRGBO(0, 119, 255, 1);
     String buttonText = 'SIGN IN';
     return Scaffold(
@@ -111,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                     SizedBox(height: 20),
                     Form(
-                      key: _formKey,
+                      key: formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -131,8 +132,9 @@ class _LoginPageState extends State<LoginPage> {
                               final ok = RegExp(
                                 r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$',
                               ).hasMatch(v);
-                              if (v.isEmpty || !ok)
+                              if (v.isEmpty || !ok) {
                                 return 'Please enter a valid email';
+                              }
                               return null;
                             },
                             decoration: InputDecoration(
@@ -197,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                                   onPressed: () {
                                     email = _emailController.text.trim();
                                     password = _passwordController.text.trim();
-                                    if (_formKey.currentState!.validate()) {
+                                    if (formKey.currentState!.validate()) {
                                       setState(() {
                                         buttonColor = Color.fromRGBO(
                                           0,
@@ -216,19 +218,19 @@ class _LoginPageState extends State<LoginPage> {
                                       );
                                     }
                                   },
-                                  child: Text(
-                                    buttonText,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: buttonColor,
                                     foregroundColor: Colors.white,
                                     padding: EdgeInsets.symmetric(vertical: 17),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    buttonText,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),

@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/features/home/domain/core/fail.dart';
 import 'package:jihc_landf/src/features/home/domain/core/success.dart';
 import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
@@ -20,11 +21,11 @@ class ItemRepositoryImpl implements ItemRepository {
         'desc': item.desc,
         'date': item.date,
         'location': item.location,
-        'image': MultipartFile.fromBytes(item.item_image, filename: 'item.jpg'), // <-- Correct image upload
+        'image': MultipartFile.fromBytes(item.item_image, filename: 'item.jpg'),
         'isResolved': item.isResolved,
       });
       final response = await dio.post(
-        'https://jihcservfixed-production.up.railway.app/lostandfound/',
+        '${ApiClient.defaultBaseUrl}/lostandfound',
         data: formData,
         options: Options(followRedirects: true),
       );
@@ -51,7 +52,7 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   Future<Either<Failure, Unit>> deleteItem(String itemId) async {
     try {
-      final response = await dio.delete('https://jihcservfixed-production.up.railway.app/lostandfound/$itemId'
+      final response = await dio.delete('${ApiClient.defaultBaseUrl}/lostandfound/$itemId'
       );
       await Future.delayed(Duration(milliseconds: 200));
       return Right(unit);
@@ -63,7 +64,7 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   Future<Either<Failure, List<ItemEntity>>> fetchItems() async {
     try {
-      final response = await dio.get('https://jihcservfixed-production.up.railway.app/lostandfound');
+      final response = await dio.get('${ApiClient.defaultBaseUrl}/lostandfound');
       if (response.statusCode == 200 && response.data is List) {
         List<ItemEntity> items = (response.data as List)
           .map((item) => ItemModel.fromJson(item))

@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
-
 class ItemEntity {
   final String item_id;
   final String user_id;

@@ -5,12 +5,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
 
 import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
-import 'package:jihc_landf/src/features/home/data/repositories/itemRepositoryImpl.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jihc_landf/src/features/home/presentation/bloc/item_bloc.dart';
 
 class PostPage extends StatefulWidget {
+  const PostPage({super.key});
+
   @override
   _PostPageState createState() => _PostPageState();
 }
@@ -50,15 +50,16 @@ class _PostPageState extends State<PostPage> {
             });
           }
           if (state is ItemError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
           if (state is ItemPosted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Item posted successfully!')),
             );
-            
+            // Trigger a refresh so Home shows the new item upon return
+            context.read<ItemBloc>().add(FetchItems());
           }
         },
         child: Scaffold(
@@ -87,7 +88,8 @@ class _PostPageState extends State<PostPage> {
                             ),
                             backgroundColor:
                                 isLost ? Colors.red : Colors.grey[300],
-                            foregroundColor: isLost ? Colors.white : Colors.black,
+                            foregroundColor:
+                                isLost ? Colors.white : Colors.black,
                           ),
                           child: Text(
                             'I Lost Something',
@@ -133,50 +135,64 @@ class _PostPageState extends State<PostPage> {
                     style: TextStyle(fontWeight: FontWeight.w500),
                   ),
                   SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () async {
-                      final ImagePicker picker = ImagePicker();
-                      final XFile? image = await picker.pickImage(
-                        source: ImageSource.gallery,
-                      );
-                      if (image != null) {
-                        bytes = await image.readAsBytes();
-                      }
-                      print(bytes);
-                    },
-                    child: Container(
-                      height: 120,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1.5,
-                          style: BorderStyle.solid,
+                  bytes.isNotEmpty
+                      ? Container(
+                        height: 120,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 1.5,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        child: Image.memory(bytes, fit: BoxFit.cover),
+                      )
+                      : GestureDetector(
+                        onTap: () async {
+                          final ImagePicker picker = ImagePicker();
+                          final XFile? image = await picker.pickImage(
+                            source: ImageSource.gallery,
+                          );
+                          if (image != null) {
+                            bytes = await image.readAsBytes();
+                          }
+                        },
+                        child: Container(
+                          height: 120,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 1.5,
+                              style: BorderStyle.solid,
+                            ),
+                          ),
+                          child: Center(
+                            child:
+                                _imagePath == null
+                                    ? Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.image_outlined,
+                                          size: 40,
+                                          color: Colors.grey,
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          'Tap to add photo',
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                      ],
+                                    )
+                                    : Text('Image selected: $_imagePath'),
+                          ),
                         ),
                       ),
-                      child: Center(
-                        child:
-                            _imagePath == null
-                                ? Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.image_outlined,
-                                      size: 40,
-                                      color: Colors.grey,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Tap to add photo',
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ],
-                                )
-                                : Text('Image selected: $_imagePath'),
-                      ),
-                    ),
-                  ),
                   SizedBox(height: 24),
                   Text('Item Name'),
                   SizedBox(height: 8),
