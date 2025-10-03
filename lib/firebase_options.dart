@@ -47,30 +47,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCBCRMyyh5I7zQILBDsMTZSY9cWCeNf-Z4',
-    appId: '1:333941493755:web:106b4cec1fd148660c055e',
-    messagingSenderId: '333941493755',
-    projectId: 'jihc-lostandfound-hosting',
-    authDomain: 'jihc-lostandfound-hosting.firebaseapp.com',
-    storageBucket: 'jihc-lostandfound-hosting.firebasestorage.app',
-    measurementId: 'G-TPMSVYGV9J',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDRM1l9zKnAHkJBbwFW4D7lLEhGZOeh_aM',
-    appId: '1:333941493755:ios:9bfb66a3262554540c055e',
-    messagingSenderId: '333941493755',
-    projectId: 'jihc-lostandfound-hosting',
-    storageBucket: 'jihc-lostandfound-hosting.firebasestorage.app',
-    iosBundleId: 'com.example.jihcLandf',
+    apiKey: 'AIzaSyDCoDrQ7uHjFa2Xlk1Elr0S4lnS_u-3lFg',
+    appId: '1:751723212087:web:1e5909716a970d606a3eb2',
+    messagingSenderId: '751723212087',
+    projectId: 'jihc-7777',
+    authDomain: 'jihc-7777.firebaseapp.com',
+    storageBucket: 'jihc-7777.firebasestorage.app',
+    measurementId: 'G-027EWLQE84',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBu1o_ht2stt1JTjiL3MyzvEysAmNglTO0',
-    appId: '1:333941493755:android:8092508c492445040c055e',
-    messagingSenderId: '333941493755',
-    projectId: 'jihc-lostandfound-hosting',
-    storageBucket: 'jihc-lostandfound-hosting.firebasestorage.app',
+    apiKey: 'AIzaSyDejByNC2RT1_rhLzVvacLOMuKPQphb0xE',
+    appId: '1:751723212087:android:1ab03e5b325b01926a3eb2',
+    messagingSenderId: '751723212087',
+    projectId: 'jihc-7777',
+    storageBucket: 'jihc-7777.firebasestorage.app',
   );
 
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAL62hkiPkhCJhW_0RF4wbwO5vBnEj5t28',
+    appId: '1:751723212087:ios:40c4b8b895a5285d6a3eb2',
+    messagingSenderId: '751723212087',
+    projectId: 'jihc-7777',
+    storageBucket: 'jihc-7777.firebasestorage.app',
+    iosBundleId: 'com.example.jihcLandf',
+  );
 }

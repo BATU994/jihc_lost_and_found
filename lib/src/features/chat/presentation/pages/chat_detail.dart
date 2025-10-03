@@ -9,11 +9,18 @@ class ChatDetailPage extends StatefulWidget {
     required this.chatId,
     required this.title,
     required this.currentUserId,
+    required this.item,
+    required this.itemImage,
+    required this.itemId,
+    required this.userName,
   });
   final int chatId;
   final String title;
   final int currentUserId;
-
+  final String item;
+  final String itemImage;
+  final String itemId;
+  final String userName;
   @override
   State<ChatDetailPage> createState() => _ChatDetailPageState();
 }
@@ -29,8 +36,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       titleSpacing: 0,
       title: Row(
         children: [
-          const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black87),
-          const SizedBox(width: 8),
           const CircleAvatar(
             radius: 16,
             backgroundColor: Color(0xFFE0E0E0),
@@ -46,16 +51,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   color: Colors.black87,
                   fontWeight: FontWeight.w700,
                 ),
-              ),
-              Row(
-                children: const [
-                  Icon(Icons.circle, size: 8, color: Colors.green),
-                  SizedBox(width: 4),
-                  Text(
-                    'Online',
-                    style: TextStyle(color: Colors.black45, fontSize: 12),
-                  ),
-                ],
               ),
             ],
           ),
@@ -74,19 +69,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Text(
-            'Water Bottle',
+            widget.userName,
             style: TextStyle(
               fontWeight: FontWeight.w700,
               color: Colors.black87,
             ),
           ),
           SizedBox(height: 2),
-          Text(
-            'Lost & Found Item',
-            style: TextStyle(color: Colors.black54, fontSize: 12),
-          ),
         ],
       ),
     );

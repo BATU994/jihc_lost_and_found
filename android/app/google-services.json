@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "333941493755",
-    "project_id": "jihc-lostandfound-hosting",
-    "storage_bucket": "jihc-lostandfound-hosting.firebasestorage.app"
+    "project_number": "751723212087",
+    "project_id": "jihc-7777",
+    "storage_bucket": "jihc-7777.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:333941493755:android:8092508c492445040c055e",
+        "mobilesdk_app_id": "1:751723212087:android:1ab03e5b325b01926a3eb2",
         "android_client_info": {
           "package_name": "com.example.jihc_landf"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBu1o_ht2stt1JTjiL3MyzvEysAmNglTO0"
+          "current_key": "AIzaSyDejByNC2RT1_rhLzVvacLOMuKPQphb0xE"
         }
       ],
       "services": {

@@ -1,4 +1,3 @@
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileInfo {
@@ -29,6 +28,11 @@ class ProfileInfo {
       'group': prefs.getString('group'),
       'userId': prefs.getInt('userId'),
     };
+  }
+
+  Future<String?> getUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('username');
   }
 
   Future<String?> getId() async {

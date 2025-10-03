@@ -17,6 +17,7 @@ class ItemRepositoryImpl implements ItemRepository {
       final formData = FormData.fromMap({
         'userId': item.user_id,
         'item_name': item.item_name,
+        'userName': item.userName,
         'isLost': item.isLost,
         'desc': item.desc,
         'date': item.date,
@@ -25,7 +26,7 @@ class ItemRepositoryImpl implements ItemRepository {
         'isResolved': item.isResolved,
       });
       final response = await dio.post(
-        '${ApiClient.defaultBaseUrl}/lostandfound',
+        '${ApiClient.defaultBaseUrl}/lostandfound/',
         data: formData,
         options: Options(followRedirects: true),
       );
@@ -52,7 +53,8 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   Future<Either<Failure, Unit>> deleteItem(String itemId) async {
     try {
-      final response = await dio.delete('${ApiClient.defaultBaseUrl}/lostandfound/$itemId'
+      final response = await dio.delete(
+        '${ApiClient.defaultBaseUrl}/lostandfound/$itemId',
       );
       await Future.delayed(Duration(milliseconds: 200));
       return Right(unit);
@@ -64,11 +66,14 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   Future<Either<Failure, List<ItemEntity>>> fetchItems() async {
     try {
-      final response = await dio.get('${ApiClient.defaultBaseUrl}/lostandfound');
+      final response = await dio.get(
+        '${ApiClient.defaultBaseUrl}/lostandfound/',
+      );
       if (response.statusCode == 200 && response.data is List) {
-        List<ItemEntity> items = (response.data as List)
-          .map((item) => ItemModel.fromJson(item))
-          .toList();
+        List<ItemEntity> items =
+            (response.data as List)
+                .map((item) => ItemModel.fromJson(item))
+                .toList();
         return Right(items);
       } else {
         return Left(Failure(failure: 'Failed to fetch items'));

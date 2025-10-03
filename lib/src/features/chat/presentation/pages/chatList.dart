@@ -106,8 +106,12 @@ class ChatListPage extends StatelessWidget {
                                           )..load(chat.id),
                                       child: ChatDetailPage(
                                         chatId: chat.id,
-                                        title: 'User $other',
+                                        title: chat.userNames.last,
                                         currentUserId: currentUserId,
+                                        item: chat.item ?? '',
+                                        itemImage: chat.itemImage ?? '',
+                                        itemId: chat.itemId ?? '',
+                                        userName: chat.userNames.last,
                                       ),
                                     ),
                               ),
@@ -138,7 +142,7 @@ class ChatListPage extends StatelessWidget {
                           ],
                         ),
                         title: Text(
-                          'User $other',
+                          chat.userNames.last,
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                         subtitle: Row(
@@ -147,7 +151,7 @@ class ChatListPage extends StatelessWidget {
                             SizedBox(width: 4),
                             Expanded(
                               child: Text(
-                                'That matches! I found them y...',
+                                'Placeholder message',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(color: Colors.black54),

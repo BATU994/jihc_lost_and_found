@@ -10,6 +10,7 @@ import 'package:jihc_landf/src/features/chat/presentation/bloc/chat_messages_cub
 
 class ItemDetailPage extends StatelessWidget {
   final ItemEntity item;
+
   const ItemDetailPage({super.key, required this.item});
 
   @override
@@ -204,10 +205,16 @@ class ItemDetailPage extends StatelessWidget {
                         return;
                       }
                       try {
+                        String? username = await ProfileInfo().getUserName();
                         final repo = ChatRepositoryImpl(ApiClient());
                         final chat = await repo.createChat(
                           currentUserId,
                           ownerId,
+                          username,
+                          item.userName,
+                          item.item_name,
+                          item.item_image,
+                          item.item_id,
                         );
                         if (!context.mounted) return;
                         Navigator.of(context).push(
@@ -220,8 +227,12 @@ class ItemDetailPage extends StatelessWidget {
                                       )..load(chat.id),
                                   child: ChatDetailPage(
                                     chatId: chat.id,
-                                    title: 'User ${ownerId.toString()}',
+                                    title: item.userName,
                                     currentUserId: currentUserId,
+                                    item: item.item_name,
+                                    itemImage: item.item_image,
+                                    itemId: item.item_id,
+                                    userName: item.userName,
                                   ),
                                 ),
                           ),

@@ -10,7 +10,9 @@ class ItemEntity {
   final String date;
   final String location;
   final String item_image;
+  final String userName;
   ItemEntity({
+    required this.userName,
     required this.isResolved,
     required this.item_id,
     required this.user_id,
@@ -26,6 +28,7 @@ class ItemEntity {
 class ItemEntityPost {
   final String user_id;
   final String item_name;
+  final String userName;
   final bool isLost;
   final bool isResolved;
   final String desc;
@@ -33,6 +36,7 @@ class ItemEntityPost {
   final String location;
   final Uint8List item_image;
   ItemEntityPost({
+    required this.userName,
     required this.isResolved,
     required this.user_id,
     required this.item_name,

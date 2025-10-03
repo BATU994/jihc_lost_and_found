@@ -298,9 +298,12 @@ class _PostPageState extends State<PostPage> {
                                 }
                                 ProfileInfo profileInfo = ProfileInfo();
                                 String? userId = await profileInfo.getId();
+                                String? userName =
+                                    await profileInfo.getUserName();
                                 context.read<ItemBloc>().add(
                                   PostItemRequested(
                                     item: ItemEntityPost(
+                                      userName: userName ?? '',
                                       user_id: userId ?? '',
                                       item_name: _nameController.text,
                                       desc: _descController.text,

@@ -34,11 +34,22 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<ChatEntity> createChat(int userA, int userB) async {
+  Future<ChatEntity> createChat(
+    int userA,
+    int userB,
+    String? userNameA,
+    String? userNameB,
+    String? item,
+    String? itemImage,
+    String? itemId,
+  ) async {
     final res = await _dio.post(
       '/chats',
       data: {
         "user_ids": [userA, userB],
+        "user_names": [userNameA, userNameB],
+        "item": item,
+        "item_image": itemImage,
       },
     );
     return ChatDto.fromJson(res.data as Map<String, dynamic>).toEntity();

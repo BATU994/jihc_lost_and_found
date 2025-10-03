@@ -11,10 +11,12 @@ class ItemModel extends ItemEntity {
     required super.location,
     required super.item_image,
     required super.isResolved,
+    required super.userName,
   });
 
   factory ItemModel.fromJson(Map<String, dynamic> json) {
     return ItemModel(
+      userName: json['userName'].toString(),
       user_id: json['userId'].toString(),
       item_name: json['item_name'].toString(),
       isLost: json['isLost'],
@@ -31,6 +33,7 @@ class ItemModel extends ItemEntity {
     return {
       'id': item_id,
       'userId': user_id,
+      'userName': userName,
       'item_name': item_name,
       'isLost': isLost,
       'desc': desc,
