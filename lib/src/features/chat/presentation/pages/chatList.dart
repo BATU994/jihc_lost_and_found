@@ -1,27 +1,53 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
-// Removed UsernameBloc usage for now; fallback titles are used
+import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
+import 'package:jihc_landf/src/core/item/data/repositories/itemRepositoryImpl.dart';
+import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
+import 'package:jihc_landf/src/features/auth/data/repositories/user_repository_impl.dart';
 import '../../data/repository/repositoryImpl.dart';
 import '../bloc/chat_list_cubit.dart';
 import '../bloc/chat_messages_cubit.dart';
 import 'chat_detail.dart';
 
-class ChatListPage extends StatelessWidget {
+class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key, required this.currentUserId});
 
   final int currentUserId;
 
   @override
+  State<ChatListPage> createState() => _ChatListPageState();
+}
+
+class _ChatListPageState extends State<ChatListPage> {
+  @override
+  void initState() {
+    super.initState();
+    loadUserName();
+  }
+
+  TextEditingController _searchController = TextEditingController();
+  bool search = false;
+  String username = '';
+  void loadUserName() async {
+    final profileInfo = ProfileInfo();
+    final name = await profileInfo.getUserName();
+    setState(() {
+      username = name ?? 'User';
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // No eager username fetching here; resolve names lazily or display a fallback
     return MultiBlocProvider(
       providers: [
         BlocProvider(
           create:
               (_) =>
                   ChatListCubit(ChatRepositoryImpl(ApiClient()))
-                    ..load(currentUserId),
+                    ..load(widget.currentUserId),
         ),
       ],
       child: Scaffold(
@@ -30,38 +56,80 @@ class ChatListPage extends StatelessWidget {
           backgroundColor: Colors.white,
           elevation: 0,
           titleSpacing: 0,
-          title: Row(
-            children: [
-              const Icon(
-                Icons.arrow_back_ios_new,
-                size: 18,
-                color: Colors.black87,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.search, color: Colors.black54),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Search',
-                          style: TextStyle(color: Colors.black45),
+          title:
+              !search
+                  ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Chats',
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 35,
+                          ),
                         ),
-                      ),
-                    ],
+                        const Spacer(),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              search = true;
+                            });
+                          },
+                          icon: const Icon(Icons.search, color: Colors.black54),
+                        ),
+                      ],
+                    ),
+                  )
+                  : Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_back_ios_new),
+                          color: Colors.black87,
+                          onPressed: () {
+                            setState(() {
+                              search = false;
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              prefixIconConstraints: BoxConstraints(
+                                minWidth: 45,
+                                minHeight: 20,
+                              ),
+                              hintText: 'Search',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                ),
+                              ),
+                              prefixIcon: SvgPicture.asset(
+                                'assets/search_black.svg',
+                                color: Colors.black,
+                                width: 20,
+                                height: 20,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ),
-            ],
-          ),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,31 +159,41 @@ class ChatListPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final chat = state.chats[index];
                       final other = chat.userIds.firstWhere(
-                        (id) => id != currentUserId,
+                        (id) => id != widget.currentUserId,
                         orElse: () => chat.userIds.first,
                       );
                       return ListTile(
-                        onTap:
-                            () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => BlocProvider(
-                                      create:
-                                          (_) => ChatMessagesCubit(
-                                            ChatRepositoryImpl(ApiClient()),
-                                          )..load(chat.id),
-                                      child: ChatDetailPage(
-                                        chatId: chat.id,
-                                        title: chat.userNames.last,
-                                        currentUserId: currentUserId,
-                                        item: chat.item ?? '',
-                                        itemImage: chat.itemImage ?? '',
-                                        itemId: chat.itemId ?? '',
-                                        userName: chat.userNames.last,
-                                      ),
-                                    ),
-                              ),
+                        onTap: () async {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => MultiBlocProvider(
+  providers: [
+    BlocProvider(
+      create: (_) => ChatMessagesCubit(
+        ChatRepositoryImpl(ApiClient()),
+      )..load(chat.id),
+    ),
+    BlocProvider(
+      create: (_) => ItemBloc(ItemRepositoryImpl(Dio()))
+    ),
+  ],
+  child: ChatDetailPage(
+    chatId: chat.id,
+    title: username == chat.userNames.first
+        ? chat.userNames.last
+        : chat.userNames.first,
+    currentUserId: widget.currentUserId,
+    item: chat.item ?? '',
+    itemImage: chat.itemImage ?? '',
+    itemId: chat.itemId ?? '',
+    userName: chat.userNames.last,
+  ),
+)
+
                             ),
+                          );
+                        },
                         leading: Stack(
                           children: [
                             const CircleAvatar(
@@ -142,7 +220,9 @@ class ChatListPage extends StatelessWidget {
                           ],
                         ),
                         title: Text(
-                          chat.userNames.last,
+                          username == chat.userNames.first
+                              ? chat.userNames.last
+                              : chat.userNames.first,
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                         subtitle: Row(

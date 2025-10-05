@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:jihc_landf/src/core/datasources.dart';
+import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
 import '../bloc/chat_messages_cubit.dart';
 
 class ChatDetailPage extends StatefulWidget {
@@ -45,11 +47,17 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                widget.title,
-                style: const TextStyle(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w700,
+              Container(
+                height: 100,
+                child: Expanded(
+                  child: Text(
+                    widget.title,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -67,17 +75,56 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       width: double.infinity,
       color: const Color(0xFFE7F0FF),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            widget.userName,
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              color: Colors.black87,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  ApiClient.defaultBaseUrl + widget.itemImage,
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(width: 12),
+              Text(
+                widget.item,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
+                ),
+              ),
+              SizedBox(height: 2),
+            ],
+          ),
+          ElevatedButton(
+            onPressed: () {
+              context.read<ItemBloc>()..add(ResolveItem(widget.itemId));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0A84FF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.done, color: Colors.white, size: 24),
+                SizedBox(width: 4),
+                Text(
+                  'Resolved',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ],
             ),
           ),
-          SizedBox(height: 2),
         ],
       ),
     );

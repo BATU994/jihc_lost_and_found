@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
-import 'package:jihc_landf/src/features/home/domain/core/fail.dart';
-import 'package:jihc_landf/src/features/home/domain/core/success.dart';
-import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
-import 'package:jihc_landf/src/features/home/data/models/itemModel.dart';
-import 'package:jihc_landf/src/features/home/domain/repositories/itemRepostory.dart';
+import 'package:jihc_landf/src/core/item/domain/core/fail.dart';
+import 'package:jihc_landf/src/core/item/domain/core/success.dart';
+import 'package:jihc_landf/src/core/item/domain/entities/itemEntity.dart';
+import 'package:jihc_landf/src/core/item/data/models/itemModel.dart';
+import 'package:jihc_landf/src/core/item/domain/repositories/itemRepostory.dart';
 
 class ItemRepositoryImpl implements ItemRepository {
   final Dio dio;
@@ -14,21 +14,32 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   Future<Either<Failure, Success>> addItem(ItemEntityPost item) async {
     try {
-      final formData = FormData.fromMap({
-        'userId': item.user_id,
+      final Map<String, dynamic> fields = {
+        'userId': item.user_id.toString(),
         'item_name': item.item_name,
         'userName': item.userName,
-        'isLost': item.isLost,
+        'isLost': item.isLost.toString(),
         'desc': item.desc,
         'date': item.date,
         'location': item.location,
-        'image': MultipartFile.fromBytes(item.item_image, filename: 'item.jpg'),
-        'isResolved': item.isResolved,
-      });
+        'isResolved': item.isResolved.toString(),
+      };
+
+      if (item.item_image.isNotEmpty) {
+        fields['image'] = MultipartFile.fromBytes(
+          item.item_image,
+          filename: 'item.jpg',
+        );
+      }
+
+      final formData = FormData.fromMap(fields);
       final response = await dio.post(
         '${ApiClient.defaultBaseUrl}/lostandfound/',
         data: formData,
-        options: Options(followRedirects: true),
+        options: Options(
+          followRedirects: true,
+          contentType: 'multipart/form-data',
+        ),
       );
       if (response.statusCode != 200 && response.statusCode != 201) {
         return Left(Failure(failure: 'Failed to add item'));
@@ -41,10 +52,17 @@ class ItemRepositoryImpl implements ItemRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> updateItem(ItemModel item) async {
+  Future<Either<Failure, Success>> resolveItem(String itemId) async {
     try {
-      await Future.delayed(Duration(milliseconds: 200));
-      return Right(unit);
+      final response = await dio.put(
+        ApiClient.defaultBaseUrl + '/lostandfound/' + itemId,
+        data: {'isResolved': true},
+      );
+      if (response.statusCode != 200) {
+        return Left(Failure(failure: 'Failed to resolve item'));
+      } else {
+        return Right(Success(success: 'Item resolved successfully'));
+      }
     } catch (e) {
       return Left(Failure(failure: e.toString()));
     }
@@ -56,8 +74,11 @@ class ItemRepositoryImpl implements ItemRepository {
       final response = await dio.delete(
         '${ApiClient.defaultBaseUrl}/lostandfound/$itemId',
       );
-      await Future.delayed(Duration(milliseconds: 200));
-      return Right(unit);
+      if (response.statusCode != 204) {
+        return Left(Failure(failure: 'Failed to delete item'));
+      } else {
+        return Right(unit);
+      }
     } catch (e) {
       return Left(Failure(failure: e.toString()));
     }

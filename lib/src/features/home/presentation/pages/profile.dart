@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
 import 'package:jihc_landf/src/features/auth/presentation/bloc/auth_bloc_bloc.dart';
 import 'package:jihc_landf/src/features/auth/presentation/pages/login.dart';
-import 'package:jihc_landf/src/features/home/presentation/bloc/item_bloc.dart';
+import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
 import 'package:jihc_landf/src/features/home/presentation/utils/filter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jihc_landf/src/features/home/presentation/widgets/itemWidgetProfile.dart';

@@ -1,4 +1,4 @@
-import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
+import 'package:jihc_landf/src/core/item/domain/entities/itemEntity.dart';
 
 class ItemModel extends ItemEntity {
   ItemModel({
@@ -25,13 +25,13 @@ class ItemModel extends ItemEntity {
       location: json['location'].toString(),
       item_image: json['image'].toString(),
       isResolved: json['isResolved'],
-      item_id: json['id'].toString(), // <-- Fix here
+      item_id: json['item_id'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': item_id,
+      'item_id': item_id,
       'userId': user_id,
       'userName': userName,
       'item_name': item_name,

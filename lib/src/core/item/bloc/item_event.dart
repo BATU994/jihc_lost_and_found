@@ -5,7 +5,6 @@ abstract class ItemEvent {}
 
 class FetchItems extends ItemEvent {}
 
-
 class PostItemRequested extends ItemEvent {
   final ItemEntityPost item;
   PostItemRequested({required this.item});
@@ -24,4 +23,9 @@ class DeleteItem extends ItemEvent {
 class FetchUserName extends ItemEvent {
   final String userId;
   FetchUserName(this.userId);
+}
+
+class ResolveItem extends ItemEvent {
+  final String itemId;
+  ResolveItem(this.itemId);
 }

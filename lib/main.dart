@@ -7,8 +7,8 @@ import 'package:jihc_landf/src/features/auth/data/repositories/shared_preference
 import 'package:jihc_landf/src/features/auth/presentation/pages/login.dart';
 import 'package:jihc_landf/src/features/auth/presentation/bloc/auth_bloc_bloc.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/user_repository_impl.dart';
-import 'package:jihc_landf/src/features/home/data/repositories/itemRepositoryImpl.dart';
-import 'package:jihc_landf/src/features/home/presentation/bloc/item_bloc.dart';
+import 'package:jihc_landf/src/core/item/data/repositories/itemRepositoryImpl.dart';
+import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:jihc_landf/src/features/chat/presentation/pages/chatList.dart';
 import 'package:firebase_core/firebase_core.dart';

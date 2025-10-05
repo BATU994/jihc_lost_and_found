@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:jihc_landf/src/features/home/data/models/itemModel.dart';
-import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
-import 'package:jihc_landf/src/features/home/presentation/bloc/item_bloc.dart';
+import 'package:jihc_landf/src/core/item/data/models/itemModel.dart';
+import 'package:jihc_landf/src/core/item/domain/entities/itemEntity.dart';
+import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
 import 'package:jihc_landf/src/features/home/presentation/utils/filter.dart';
 import 'package:jihc_landf/src/features/home/presentation/widgets/itemWidget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

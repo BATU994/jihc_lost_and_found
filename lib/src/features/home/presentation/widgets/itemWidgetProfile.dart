@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
-import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
-import 'package:jihc_landf/src/features/home/presentation/bloc/item_bloc.dart';
+import 'package:jihc_landf/src/core/item/domain/entities/itemEntity.dart';
+import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 Widget itemProfile(BuildContext context, ItemEntity itemModel) {

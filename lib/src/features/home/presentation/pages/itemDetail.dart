@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
+import 'package:jihc_landf/src/core/item/domain/entities/itemEntity.dart';
 import 'package:jihc_landf/src/features/chat/data/repository/repositoryImpl.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
@@ -158,7 +158,7 @@ class ItemDetailPage extends StatelessWidget {
                     SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        item.user_id,
+                        item.userName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
-import 'package:jihc_landf/src/features/home/data/models/itemModel.dart';
+import 'package:jihc_landf/src/core/item/data/models/itemModel.dart';
 import 'package:jihc_landf/src/features/home/presentation/pages/itemDetail.dart';
 
-Widget itemRectangle(BuildContext context,ItemModel itemModel) {
+Widget itemRectangle(BuildContext context, ItemModel itemModel) {
   return GestureDetector(
     onTap: () {
-      Navigator.push(context, MaterialPageRoute(
-        builder: (context) => ItemDetailPage(item: itemModel),
-      ));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ItemDetailPage(item: itemModel),
+        ),
+      );
     },
     child: Container(
       decoration: BoxDecoration(
@@ -75,7 +78,7 @@ Widget itemRectangle(BuildContext context,ItemModel itemModel) {
               ],
             ),
           ),
-    
+
           Positioned(
             top: 8,
             right: 8,
@@ -100,10 +103,7 @@ Widget itemRectangle(BuildContext context,ItemModel itemModel) {
                 child: Text(
                   !itemModel.isLost ? 'Found' : 'Lost',
                   style: TextStyle(
-                    color:
-                        !itemModel.isLost
-                            ? Colors.green
-                            : Colors.red,
+                    color: !itemModel.isLost ? Colors.green : Colors.red,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -119,9 +119,12 @@ Widget itemRectangle(BuildContext context,ItemModel itemModel) {
 Widget itemSquare(BuildContext context, ItemModel itemModel) {
   return GestureDetector(
     onTap: () {
-      Navigator.push(context, MaterialPageRoute(
-        builder: (context) => ItemDetailPage(item: itemModel),
-      ));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ItemDetailPage(item: itemModel),
+        ),
+      );
     },
     child: Container(
       width: 200,
@@ -166,10 +169,7 @@ Widget itemSquare(BuildContext context, ItemModel itemModel) {
                   child: Text(
                     !itemModel.isLost ? 'Found' : 'Lost',
                     style: TextStyle(
-                      color:
-                          !itemModel.isLost
-                              ? Colors.green
-                              : Colors.red,
+                      color: !itemModel.isLost ? Colors.green : Colors.red,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),

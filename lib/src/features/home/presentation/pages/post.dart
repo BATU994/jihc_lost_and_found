@@ -1,12 +1,13 @@
 import 'dart:typed_data';
 
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
 
-import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
+import 'package:jihc_landf/src/core/item/domain/entities/itemEntity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jihc_landf/src/features/home/presentation/bloc/item_bloc.dart';
+import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -58,12 +59,11 @@ class _PostPageState extends State<PostPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Item posted successfully!')),
             );
-            // Trigger a refresh so Home shows the new item upon return
             context.read<ItemBloc>().add(FetchItems());
           }
         },
         child: Scaffold(
-          appBar: AppBar(title: Text('Post Item')),
+          appBar: AppBar(title: Center(child: Text('Post Item'))),
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -83,7 +83,7 @@ class _PostPageState extends State<PostPage> {
                           },
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
-                              vertical: 12,
+                              vertical: 25,
                               horizontal: 25,
                             ),
                             backgroundColor:
@@ -110,7 +110,7 @@ class _PostPageState extends State<PostPage> {
                           },
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
-                              vertical: 12,
+                              vertical: 25,
                               horizontal: 25,
                             ),
                             backgroundColor:
@@ -137,10 +137,10 @@ class _PostPageState extends State<PostPage> {
                   SizedBox(height: 8),
                   bytes.isNotEmpty
                       ? Container(
-                        height: 120,
+                        height: 180,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(40),
                           border: Border.all(
                             color: Colors.grey,
                             width: 1.5,
@@ -159,40 +159,46 @@ class _PostPageState extends State<PostPage> {
                             bytes = await image.readAsBytes();
                           }
                         },
-                        child: Container(
-                          height: 120,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 1.5,
-                              style: BorderStyle.solid,
-                            ),
+                        child: DottedBorder(
+                          options: RoundedRectDottedBorderOptions(
+                            radius: Radius.circular(30),
+                            strokeWidth: 2,
+                            dashPattern: [10, 6],
+                            color: Colors.grey,
                           ),
-                          child: Center(
-                            child:
-                                _imagePath == null
-                                    ? Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.image_outlined,
-                                          size: 40,
-                                          color: Colors.grey,
-                                        ),
-                                        SizedBox(height: 8),
-                                        Text(
-                                          'Tap to add photo',
-                                          style: TextStyle(color: Colors.grey),
-                                        ),
-                                      ],
-                                    )
-                                    : Text('Image selected: $_imagePath'),
+                          child: Container(
+                            height: 180,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(40),
+                            ),
+                            child: Center(
+                              child:
+                                  _imagePath == null
+                                      ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.image_outlined,
+                                            size: 40,
+                                            color: Colors.grey,
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            'Tap to add photo',
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                      : Text('Image selected: $_imagePath'),
+                            ),
                           ),
                         ),
                       ),
+
                   SizedBox(height: 24),
                   Text('Item Name'),
                   SizedBox(height: 8),
@@ -201,7 +207,7 @@ class _PostPageState extends State<PostPage> {
                     decoration: InputDecoration(
                       hintText: 'e.g., iPhone 14 Pro',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(40),
                       ),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
@@ -220,7 +226,7 @@ class _PostPageState extends State<PostPage> {
                       hintText:
                           'Describe the item, when and where you lost/found it...',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
@@ -236,7 +242,7 @@ class _PostPageState extends State<PostPage> {
                     decoration: InputDecoration(
                       hintText: 'e.g., Library, Classroom 205',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(40),
                       ),
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
@@ -253,7 +259,7 @@ class _PostPageState extends State<PostPage> {
                     decoration: InputDecoration(
                       hintText: 'dd.mm.yyyy',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(40),
                       ),
                       suffixIcon: Icon(Icons.calendar_today_outlined),
                       contentPadding: EdgeInsets.symmetric(

@@ -20,4 +20,3 @@ class ChatListCubit extends Cubit<ChatListState> {
     }
   }
 }
-

@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:jihc_landf/src/features/home/data/repositories/itemRepositoryImpl.dart';
-import 'package:jihc_landf/src/features/home/domain/entities/itemEntity.dart';
+import 'package:jihc_landf/src/core/item/data/models/itemModel.dart';
+import 'package:jihc_landf/src/core/item/data/repositories/itemRepositoryImpl.dart';
+import 'package:jihc_landf/src/core/item/domain/entities/itemEntity.dart';
 import 'package:jihc_landf/src/features/home/presentation/utils/filter.dart';
 import 'package:meta/meta.dart';
 
@@ -55,6 +56,15 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
             emit(ItemLoaded(items, Filter.all));
           });
         },
+      );
+    });
+
+    on<ResolveItem>((event, emit) async {
+      emit(ItemLoading());
+      final result = await repository.resolveItem(event.itemId);
+      result.fold(
+        (failure) => emit(ItemError(failure.failure)),
+        (success) => emit(ItemSuccess(success.success)),
       );
     });
   }
