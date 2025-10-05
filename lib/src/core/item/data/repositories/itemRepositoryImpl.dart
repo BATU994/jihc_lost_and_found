@@ -54,7 +54,7 @@ class ItemRepositoryImpl implements ItemRepository {
   @override
   Future<Either<Failure, Success>> resolveItem(String itemId) async {
     try {
-      final response = await dio.put(
+      final response = await dio.patch(
         ApiClient.defaultBaseUrl + '/lostandfound/' + itemId,
         data: {'isResolved': true},
       );

@@ -50,8 +50,20 @@ class ChatRepositoryImpl implements ChatRepository {
         "user_names": [userNameA, userNameB],
         "item": item,
         "item_image": itemImage,
+        "item_id": itemId,
       },
     );
     return ChatDto.fromJson(res.data as Map<String, dynamic>).toEntity();
+  }
+  @override
+  Future<String> deleteChat(String chatId) async {
+    final res = await _dio.delete(
+      '${ApiClient.defaultBaseUrl}/chats/${chatId}'
+    );
+    if (res.statusCode != 204) {
+      throw Exception('Failed to delete message');
+    } else {
+      return 'Message deleted successfully';
+    }
   }
 }

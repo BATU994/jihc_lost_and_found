@@ -6,7 +6,7 @@ import 'package:jihc_landf/src/features/chat/data/repository/repositoryImpl.dart
 import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
 import 'package:jihc_landf/src/features/chat/presentation/pages/chat_detail.dart';
-import 'package:jihc_landf/src/features/chat/presentation/bloc/chat_messages_cubit.dart';
+import 'package:jihc_landf/src/features/chat/presentation/bloc/chat_messages_bloc.dart';
 
 class ItemDetailPage extends StatelessWidget {
   final ItemEntity item;
@@ -222,9 +222,9 @@ class ItemDetailPage extends StatelessWidget {
                             builder:
                                 (_) => BlocProvider(
                                   create:
-                                      (_) => ChatMessagesCubit(
+                                      (_) => ChatMessagesBloc(
                                         ChatRepositoryImpl(ApiClient()),
-                                      )..load(chat.id),
+                                      )..add(LoadChatMessages(chat.id)),
                                   child: ChatDetailPage(
                                     chatId: chat.id,
                                     title: item.userName,

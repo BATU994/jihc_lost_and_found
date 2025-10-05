@@ -6,14 +6,17 @@ class ChatDto {
   final List<String> userNames;
   final String? item;
   final String? itemImage;
+  final String itemId;
   ChatDto({
     required this.id,
+    required this.itemId,
     required this.userIds,
     required this.userNames,
     this.item,
     this.itemImage,
   });
   factory ChatDto.fromJson(Map<String, dynamic> json) => ChatDto(
+    itemId: json['item_id'] as String,
     id: json['id'] as int,
     userIds: (json['user_ids'] as List).map((e) => e as int).toList(),
     userNames: (json['user_names'] as List).map((e) => e as String).toList(),
@@ -21,6 +24,7 @@ class ChatDto {
     itemImage: json['item_image'] as String?,
   );
   ChatEntity toEntity() => ChatEntity(
+    itemId: itemId,
     id: id,
     userIds: userIds,
     userNames: userNames,

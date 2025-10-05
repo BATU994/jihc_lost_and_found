@@ -24,7 +24,6 @@ class _HomePageState extends State<HomePage> {
     searchController.addListener(() {
       setState(() {});
     });
-    // Refresh items whenever HomePage opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<ItemBloc>().add(FetchItems());

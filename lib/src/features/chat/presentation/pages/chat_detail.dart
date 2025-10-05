@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:jihc_landf/navBuild.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
-import '../bloc/chat_messages_cubit.dart';
+import 'package:jihc_landf/src/features/chat/presentation/bloc/chat_list_bloc.dart';
+import '../bloc/chat_messages_bloc.dart';
 
 class ChatDetailPage extends StatefulWidget {
   const ChatDetailPage({
@@ -105,7 +107,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<ItemBloc>()..add(ResolveItem(widget.itemId));
+              context.read<ItemBloc>().add(ResolveItem(widget.itemId));
+              context.read<ChatListBloc>().add(DeleteChat(widget.chatId.toString()));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => NavBuild()));
+              print(widget.itemId + " Resolved");
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0A84FF),
@@ -139,14 +145,16 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         children: [
           _contextBanner(),
           Expanded(
-            child: BlocBuilder<ChatMessagesCubit, ChatMessagesState>(
+            child: BlocBuilder<ChatMessagesBloc, ChatMessagesStateBloc>(
               builder: (context, state) {
-                if (state.loading) {
+                if (state is ChatMessagesLoading) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                if (state.error != null) {
-                  return Center(child: Text(state.error!));
+                if (state is ChatMessagesError) {
+                  return Center(child: Text(state.message));
                 }
+                if (state is! ChatMessagesLoaded)
+                  return const SizedBox.shrink();
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: state.messages.length,
@@ -239,9 +247,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       onPressed: () {
                         final text = _controller.text.trim();
                         if (text.isEmpty) return;
-                        context.read<ChatMessagesCubit>().send(
-                          widget.chatId,
-                          text,
+                        context.read<ChatMessagesBloc>().add(
+                          SendChatMessage(widget.chatId, text),
                         );
                         _controller.clear();
                       },

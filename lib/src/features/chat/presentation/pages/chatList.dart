@@ -6,10 +6,9 @@ import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
 import 'package:jihc_landf/src/core/item/data/repositories/itemRepositoryImpl.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
-import 'package:jihc_landf/src/features/auth/data/repositories/user_repository_impl.dart';
 import '../../data/repository/repositoryImpl.dart';
-import '../bloc/chat_list_cubit.dart';
-import '../bloc/chat_messages_cubit.dart';
+import '../bloc/chat_list_bloc.dart';
+import '../bloc/chat_messages_bloc.dart';
 import 'chat_detail.dart';
 
 class ChatListPage extends StatefulWidget {
@@ -46,8 +45,8 @@ class _ChatListPageState extends State<ChatListPage> {
         BlocProvider(
           create:
               (_) =>
-                  ChatListCubit(ChatRepositoryImpl(ApiClient()))
-                    ..load(widget.currentUserId),
+                  ChatListBloc(ChatRepositoryImpl(ApiClient()))
+                    ..add(LoadChats(widget.currentUserId)),
         ),
       ],
       child: Scaffold(
@@ -142,13 +141,16 @@ class _ChatListPageState extends State<ChatListPage> {
               ),
             ),
             Expanded(
-              child: BlocBuilder<ChatListCubit, ChatListState>(
+              child: BlocBuilder<ChatListBloc, ChatListStateBloc>(
                 builder: (context, state) {
-                  if (state.loading) {
+                  if (state is ChatListLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  if (state.error != null) {
-                    return Center(child: Text(state.error!));
+                  if (state is ChatListError) {
+                    return Center(child: Text(state.message));
+                  }
+                  if (state is! ChatListLoaded) {
+                    return const SizedBox.shrink();
                   }
                   if (state.chats.isEmpty) {
                     return const Center(child: Text('No chats'));
@@ -158,39 +160,40 @@ class _ChatListPageState extends State<ChatListPage> {
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final chat = state.chats[index];
-                      final other = chat.userIds.firstWhere(
-                        (id) => id != widget.currentUserId,
-                        orElse: () => chat.userIds.first,
-                      );
+                      // Determine other participant if needed later
                       return ListTile(
                         onTap: () async {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder:
                                   (_) => MultiBlocProvider(
-  providers: [
-    BlocProvider(
-      create: (_) => ChatMessagesCubit(
-        ChatRepositoryImpl(ApiClient()),
-      )..load(chat.id),
-    ),
-    BlocProvider(
-      create: (_) => ItemBloc(ItemRepositoryImpl(Dio()))
-    ),
-  ],
-  child: ChatDetailPage(
-    chatId: chat.id,
-    title: username == chat.userNames.first
-        ? chat.userNames.last
-        : chat.userNames.first,
-    currentUserId: widget.currentUserId,
-    item: chat.item ?? '',
-    itemImage: chat.itemImage ?? '',
-    itemId: chat.itemId ?? '',
-    userName: chat.userNames.last,
-  ),
-)
-
+                                    providers: [
+                                      BlocProvider(
+                                        create:
+                                            (_) => ChatMessagesBloc(
+                                              ChatRepositoryImpl(ApiClient()),
+                                            )..add(LoadChatMessages(chat.id)),
+                                      ),
+                                      BlocProvider(
+                                        create:
+                                            (_) => ItemBloc(
+                                              ItemRepositoryImpl(Dio()),
+                                            ),
+                                      ),
+                                    ],
+                                    child: ChatDetailPage(
+                                      chatId: chat.id,
+                                      title:
+                                          username == chat.userNames.first
+                                              ? chat.userNames.last
+                                              : chat.userNames.first,
+                                      currentUserId: widget.currentUserId,
+                                      item: chat.item ?? '',
+                                      itemImage: chat.itemImage ?? '',
+                                      itemId: chat.itemId ?? '',
+                                      userName: chat.userNames.last,
+                                    ),
+                                  ),
                             ),
                           );
                         },
