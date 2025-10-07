@@ -5,6 +5,7 @@ import 'package:jihc_landf/src/core/item/domain/entities/itemEntity.dart';
 import 'package:jihc_landf/src/features/chat/data/repository/repositoryImpl.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
+import 'package:jihc_landf/src/features/chat/presentation/bloc/chat_list_bloc.dart';
 import 'package:jihc_landf/src/features/chat/presentation/pages/chat_detail.dart';
 import 'package:jihc_landf/src/features/chat/presentation/bloc/chat_messages_bloc.dart';
 
@@ -165,7 +166,7 @@ class ItemDetailPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text('5 hours ago', style: TextStyle(color: Colors.grey)),
+                    Text(item.date, style: TextStyle(color: Colors.grey)),
                   ],
                 ),
               ),
@@ -220,11 +221,18 @@ class ItemDetailPage extends StatelessWidget {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder:
-                                (_) => BlocProvider(
-                                  create:
-                                      (_) => ChatMessagesBloc(
-                                        ChatRepositoryImpl(ApiClient()),
-                                      )..add(LoadChatMessages(chat.id)),
+                                (_) => MultiBlocProvider(
+                                  providers: [
+                                    BlocProvider(
+                                      create:
+                                          (_) => ChatMessagesBloc(
+                                            ChatRepositoryImpl(ApiClient()),
+                                          )..add(LoadChatMessages(chat.id)),
+                                    ),
+                                    BlocProvider(
+                                      create: (context) => ChatListBloc(ChatRepositoryImpl(ApiClient())),
+                                    ),
+                                  ],
                                   child: ChatDetailPage(
                                     chatId: chat.id,
                                     title: item.userName,

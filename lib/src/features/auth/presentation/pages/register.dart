@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:jihc_landf/navBuild.dart';
@@ -48,6 +50,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 content: Text('Registration Successful!'),
                 backgroundColor: Colors.green,
               ),
+            );
+            context.read<AuthBlocBloc>().add(AuthLoginRequested(email: email, password: password));
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const NavBuild()),
             );
           } else if (state is AuthFailed) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -372,12 +379,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     userType: userType,
                   ),
                 );
-                if (state is AuthBlocSuccess) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const NavBuild()),
-                  );
-                }
                 Future.delayed(Duration(seconds: 1), () {
                   setState(() {
                     buttonColor = Color.fromRGBO(0, 119, 255, 1);

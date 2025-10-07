@@ -63,7 +63,6 @@ class _PostPageState extends State<PostPage> {
           }
         },
         child: Scaffold(
-          appBar: AppBar(title: Center(child: Text('Post Item'))),
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),

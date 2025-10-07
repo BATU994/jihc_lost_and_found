@@ -31,6 +31,7 @@ Widget itemRectangle(BuildContext context, ItemModel itemModel) {
                   child: Image.network(
                     ApiClient.defaultBaseUrl + itemModel.item_image,
                     width: 60,
+                    height: double.infinity,
                     fit: BoxFit.fitHeight,
                   ),
                 ),
@@ -40,7 +41,7 @@ Widget itemRectangle(BuildContext context, ItemModel itemModel) {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        itemModel.item_name,
+                        itemModel.item_name,  
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,

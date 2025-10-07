@@ -37,7 +37,6 @@ class _ChatListPageState extends State<ChatListPage> {
       username = name ?? 'User';
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -160,7 +159,6 @@ class _ChatListPageState extends State<ChatListPage> {
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final chat = state.chats[index];
-                      // Determine other participant if needed later
                       return ListTile(
                         onTap: () async {
                           Navigator.of(context).push(
@@ -180,6 +178,12 @@ class _ChatListPageState extends State<ChatListPage> {
                                               ItemRepositoryImpl(Dio()),
                                             ),
                                       ),
+                                      BlocProvider(
+                                        create: 
+                                            (_) => ChatListBloc(
+                                              ChatRepositoryImpl(ApiClient()),
+                                            ),
+                                      )
                                     ],
                                     child: ChatDetailPage(
                                       chatId: chat.id,

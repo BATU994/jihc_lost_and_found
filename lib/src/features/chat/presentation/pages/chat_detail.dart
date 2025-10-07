@@ -5,6 +5,7 @@ import 'package:jihc_landf/navBuild.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
 import 'package:jihc_landf/src/features/chat/presentation/bloc/chat_list_bloc.dart';
+import 'package:jihc_landf/src/features/chat/presentation/pages/congrats.dart';
 import '../bloc/chat_messages_bloc.dart';
 
 class ChatDetailPage extends StatefulWidget {
@@ -108,10 +109,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ElevatedButton(
             onPressed: () {
               context.read<ItemBloc>().add(ResolveItem(widget.itemId));
-              context.read<ChatListBloc>().add(DeleteChat(widget.chatId.toString()));
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => NavBuild()));
-              print(widget.itemId + " Resolved");
+              context.read<ChatListBloc>().add(
+                DeleteChat(widget.chatId.toString()),
+              );
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Congrats()));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0A84FF),
@@ -138,128 +139,130 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          _contextBanner(),
-          Expanded(
-            child: BlocBuilder<ChatMessagesBloc, ChatMessagesStateBloc>(
-              builder: (context, state) {
-                if (state is ChatMessagesLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state is ChatMessagesError) {
-                  return Center(child: Text(state.message));
-                }
-                if (state is! ChatMessagesLoaded)
-                  return const SizedBox.shrink();
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: state.messages.length,
-                  itemBuilder: (context, index) {
-                    final m = state.messages[index];
-                    final ts = DateFormat('dd MMM').format(m.timestamp);
-                    final isMe = m.senderId == widget.currentUserId;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        if (index == 0)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
+    return  Scaffold(
+        backgroundColor: Colors.white,
+        appBar: _buildAppBar(),
+        body: Column(
+          children: [
+            _contextBanner(),
+            Expanded(
+              child: BlocBuilder<ChatMessagesBloc, ChatMessagesStateBloc>(
+                builder: (context, state) {
+                  if (state is ChatMessagesLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state is ChatMessagesError) {
+                    return Center(child: Text(state.message));
+                  }
+                  if (state is! ChatMessagesLoaded) {
+                    return const SizedBox.shrink();
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: state.messages.length,
+                    itemBuilder: (context, index) {
+                      final m = state.messages[index];
+                      final ts = DateFormat('dd MMM').format(m.timestamp);
+                      final isMe = m.senderId == widget.currentUserId;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          if (index == 0)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              margin: const EdgeInsets.only(bottom: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Text(
+                                ts,
+                                style: const TextStyle(color: Colors.black87),
+                              ),
                             ),
-                            margin: const EdgeInsets.only(bottom: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Text(
-                              ts,
-                              style: const TextStyle(color: Colors.black87),
-                            ),
-                          ),
-                        Align(
-                          alignment:
-                              isMe
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                          child: Container(
-                            constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.75,
-                            ),
-                            margin: const EdgeInsets.symmetric(vertical: 6),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color:
-                                  isMe
-                                      ? const Color(0xFF0A84FF)
-                                      : Colors.grey.shade200,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Text(
-                              m.content,
-                              style: TextStyle(
-                                color: isMe ? Colors.white : Colors.black87,
+                          Align(
+                            alignment:
+                                isMe
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                            child: Container(
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.75,
+                              ),
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color:
+                                    isMe
+                                        ? const Color(0xFF0A84FF)
+                                        : Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Text(
+                                m.content,
+                                style: TextStyle(
+                                  color: isMe ? Colors.white : Colors.black87,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: TextField(
-                        controller: _controller,
-                        decoration: const InputDecoration(
-                          hintText: 'Type a message',
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF0A84FF),
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.send, color: Colors.white),
-                      onPressed: () {
-                        final text = _controller.text.trim();
-                        if (text.isEmpty) return;
-                        context.read<ChatMessagesBloc>().add(
-                          SendChatMessage(widget.chatId, text),
-                        );
-                        _controller.clear();
-                      },
-                    ),
-                  ),
-                ],
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
             ),
-          ),
-        ],
-      ),
-    );
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: TextField(
+                          controller: _controller,
+                          decoration: const InputDecoration(
+                            hintText: 'Type a message',
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF0A84FF),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.send, color: Colors.white),
+                        onPressed: () {
+                          final text = _controller.text.trim();
+                          if (text.isEmpty) return;
+                          context.read<ChatMessagesBloc>().add(
+                            SendChatMessage(widget.chatId, text),
+                          );
+                          _controller.clear();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    
   }
 }
