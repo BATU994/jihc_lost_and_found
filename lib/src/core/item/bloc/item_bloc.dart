@@ -30,10 +30,8 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     on<FetchUserItems>((event, emit) async {
       emit(ItemLoading());
       final result = await repository.fetchUserItems(event.userId);
-      result.fold((failure) => emit(ItemError(failure.failure)), (items) {
-        final userItems =
-            items.where((item) => item.user_id == event.userId).toList();
-        emit(ItemLoaded(userItems, Filter.all));
+      result.fold((failure) => emit(ItemError(failure.failure)), (items) async {
+        emit(ItemLoaded(items, Filter.all));
       });
     });
     on<DeleteItem>((event, emit) async {
@@ -57,10 +55,14 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     on<ResolveItem>((event, emit) async {
       emit(ItemLoading());
       final result = await repository.resolveItem(event.itemId);
-      result.fold(
-        (failure) => emit(ItemError(failure.failure)),
-        (success) => emit(ItemSuccess(success.success)),
-      );
+      result.fold((failure) => emit(ItemError(failure.failure)), (_) async {
+        final fetchResult = await repository.fetchItems();
+        fetchResult.fold((failure) => emit(ItemError(failure.failure)), (
+          items,
+        ) {
+          emit(ItemLoaded(items, Filter.all));
+        });
+      });
     });
   }
 }

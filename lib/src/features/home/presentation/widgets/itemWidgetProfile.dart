@@ -48,22 +48,37 @@ Widget itemProfile(BuildContext context, ItemEntity itemModel) {
                         ),
                         SizedBox(height: 8),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(
-                              Icons.location_on,
-                              size: 16,
-                              color: Colors.black54,
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on,
+                                  size: 16,
+                                  color: Colors.black54,
+                                ),
+                                SizedBox(width: 4),
+                                Text(itemModel.location),
+                                SizedBox(width: 12),
+                                Icon(
+                                  Icons.calendar_today,
+                                  size: 16,
+                                  color: Colors.black54,
+                                ),
+                                SizedBox(width: 4),
+                                Text(itemModel.date),
+                              ],
                             ),
-                            SizedBox(width: 4),
-                            Text(itemModel.location),
-                            SizedBox(width: 12),
-                            Icon(
-                              Icons.calendar_today,
-                              size: 16,
-                              color: Colors.black54,
+                            Text(
+                              itemModel.isResolved ? "· Resolved" : "· Active",
+                              style: TextStyle(
+                                color:
+                                    itemModel.isResolved
+                                        ? Colors.lightGreen
+                                        : Colors.lightBlue,
+                                fontSize: 16,
+                              ),
                             ),
-                            SizedBox(width: 4),
-                            Text(itemModel.date),
                           ],
                         ),
                       ],
@@ -78,7 +93,10 @@ Widget itemProfile(BuildContext context, ItemEntity itemModel) {
                 children: [
                   !itemModel.isResolved
                       ? InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          context.read<ItemBloc>().add(ResolveItem(itemModel.item_id));
+                          
+                        },
                         child: Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: 12,

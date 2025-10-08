@@ -311,21 +311,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (state is ItemLoading) {
                         return Center(child: CircularProgressIndicator());
                       } else if (state is ItemLoaded) {
-                        final currentUserId = user?['userId']?.toString();
-                        final items =
-                            state.items.where((item) {
-                              final isMine =
-                                  item.user_id.toString() == currentUserId;
-                              if (!isMine) return false;
-                              switch (selectedFilter) {
-                                case Filter.all:
-                                  return true;
-                                case Filter.lost:
-                                  return item.isLost;
-                                case Filter.found:
-                                  return !item.isLost;
-                              }
-                            }).toList();
+                        final items = state.items;
                         if (items.isEmpty) {
                           return Center(
                             child: Text(
@@ -368,7 +354,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.red.shade50,
                         side: BorderSide.none,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 20  ),
                       ),
                       onPressed: () {
                         context.read<AuthBlocBloc>().add(AuthLogoutRequested());
