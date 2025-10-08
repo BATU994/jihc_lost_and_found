@@ -11,7 +11,7 @@ class PostItemRequested extends ItemEvent {
 }
 
 class FetchUserItems extends ItemEvent {
-  final String userId;
+  final int userId;
   FetchUserItems(this.userId);
 }
 

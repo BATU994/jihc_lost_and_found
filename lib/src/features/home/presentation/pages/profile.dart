@@ -36,14 +36,41 @@ class _ProfilePageState extends State<ProfilePage> {
         "group": info['group'] ?? 'Unknown',
       };
     });
+    final loadedUserId = info['userId'];
+    if (!mounted) return;
+    if (loadedUserId != null) {
+      // Use the existing ItemBloc from context to fetch user-specific items
+      context.read<ItemBloc>().add(
+        FetchUserItems(
+          loadedUserId is int
+              ? loadedUserId
+              : int.tryParse(loadedUserId.toString()) ?? 0,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Wait for user profile to be loaded before rendering full UI
+    if (user == null) {
+      return const Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: Colors.white,  
+      backgroundColor: Colors.white,
       body: BlocConsumer<AuthBlocBloc, AuthBlocState>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is AuthBlocUnauthenticated) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+            );
+          }
+        },
         builder: (context, state) {
           return SafeArea(
             child: SingleChildScrollView(
@@ -78,23 +105,48 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _StatCard(
-                        label: 'Total Posts',
-                        value: '3',
-                        color: Colors.blue.shade100,
-                        valueColor: Colors.blue,
-                      ),
-                      const SizedBox(width: 16),
-                      _StatCard(
-                        label: 'Resolved',
-                        value: '2',
-                        color: Colors.green.shade100,
-                        valueColor: Colors.green,
-                      ),
-                    ],
+                  BlocBuilder<ItemBloc, ItemState>(
+                    builder: (context, state) {
+                      if (state is ItemLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (state is ItemLoaded) {
+                        final currentUserId = user?['userId']?.toString();
+                        final myItems =
+                            state.items
+                                .where(
+                                  (item) =>
+                                      item.user_id.toString() == currentUserId,
+                                )
+                                .toList();
+                        final totalPosts = myItems.length.toString();
+                        final resolvedCount =
+                            myItems
+                                .where((item) => item.isResolved)
+                                .length
+                                .toString();
+
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _StatCard(
+                              label: 'Total Posts',
+                              value: totalPosts,
+                              color: Colors.blue.shade100,
+                              valueColor: Colors.blue,
+                            ),
+                            const SizedBox(width: 16),
+                            _StatCard(
+                              label: 'Resolved',
+                              value: resolvedCount,
+                              color: Colors.green.shade100,
+                              valueColor: Colors.green,
+                            ),
+                          ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
                   ),
                   const SizedBox(height: 24),
                   Row(
@@ -121,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  // My Posts
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -153,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             },
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 150),
-            
+
                               decoration: BoxDecoration(
                                 color:
                                     selectedFilter == Filter.all
@@ -161,7 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         : Colors.white,
                                 borderRadius: BorderRadius.circular(30),
                               ),
-            
+
                               padding: EdgeInsets.symmetric(vertical: 8),
                               child: Center(
                                 child: Text(
@@ -189,7 +241,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             },
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 150),
-            
+
                               decoration: BoxDecoration(
                                 color:
                                     selectedFilter == Filter.lost
@@ -197,7 +249,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         : Colors.white,
                                 borderRadius: BorderRadius.circular(30),
                               ),
-            
+
                               padding: EdgeInsets.symmetric(vertical: 8),
                               child: Center(
                                 child: Text(
@@ -225,7 +277,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             },
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 150),
-            
+
                               decoration: BoxDecoration(
                                 color:
                                     selectedFilter == Filter.found
@@ -233,7 +285,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                         : Colors.white,
                                 borderRadius: BorderRadius.circular(30),
                               ),
-            
                               padding: EdgeInsets.symmetric(vertical: 8),
                               child: Center(
                                 child: Text(
@@ -321,14 +372,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       onPressed: () {
                         context.read<AuthBlocBloc>().add(AuthLogoutRequested());
-                        if (state is AuthBlocUnauthenticated) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginPage(),
-                            ),
-                          );
-                        }
                       },
                       child: const Text(
                         'Log out',

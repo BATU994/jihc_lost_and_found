@@ -81,7 +81,6 @@ class _HomePageState extends State<HomePage> {
                             case Filter.all:
                               filteredItems = state.items;
                           }
-
                           return GridView.builder(
                             itemCount: filteredItems.length,
                             shrinkWrap: true,

@@ -16,11 +16,7 @@ class UserNameRepositoryImpl implements UserNameRepository {
       );
       if (response.statusCode == 200 && response.data is Map<String, dynamic>) {
         final String userName = response.data['full_name'];
-        if (userName is String) {
-          return Right(userName);
-        } else {
-          return Left(Failure(failure: 'Username not found in response'));
-        }
+        return Right(userName);
       } else {
         return Left(Failure(failure: 'Failed to fetch username'));
       }

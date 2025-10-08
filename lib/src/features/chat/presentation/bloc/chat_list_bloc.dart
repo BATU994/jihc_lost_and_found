@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:jihc_landf/src/core/item/domain/core/success.dart';
 import '../../domain/entities/chat_entities.dart';
 import '../../domain/repositry/repository.dart';
 
@@ -32,7 +31,7 @@ class ChatListBloc extends Bloc<ChatListEvent, ChatListStateBloc> {
     on<DeleteChat>((event, emit) async {
       emit(ChatDeleting());
       try {
-        final success = await repo.deleteChat(event.chatId);
+        await repo.deleteChat(event.chatId);
         emit(ChatDeleted("Chat deleted successfully"));
       } catch (e) {
         emit(ChatListError(e.toString()));

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:jihc_landf/navBuild.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
 import 'package:jihc_landf/src/features/chat/presentation/bloc/chat_list_bloc.dart';

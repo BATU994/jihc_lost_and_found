@@ -85,6 +85,23 @@ class ItemRepositoryImpl implements ItemRepository {
   }
 
   @override
+  Future<Either<Failure,List<ItemEntity>>> fetchUserItems(userId) async {
+    try{
+      final response = await dio.get(ApiClient.defaultBaseUrl + '/lostandfound/user/${userId}');
+      if (response.statusCode == 200 && response.data is List) {
+        List<ItemEntity> items = 
+          (response.data as List)
+              .map((item) => ItemModel.fromJson(item)).toList();
+        return Right(items);
+      } else {
+        return Left(Failure(failure: 'Failed to fetch items'));
+      }
+    } catch (e){
+      return Left(Failure(failure: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<ItemEntity>>> fetchItems() async {
     try {
       final response = await dio.get(

@@ -20,7 +20,6 @@ class ProfileInfo {
 
   Future<Map<String, dynamic>> getProfileInfo() async {
     final prefs = await SharedPreferences.getInstance();
-    final dynamic storedUserId = prefs.get('userId');
     return {
       'username': prefs.getString('username'),
       'email': prefs.getString('email'),

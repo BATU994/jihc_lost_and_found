@@ -1,12 +1,9 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:jihc_landf/navBuild.dart';
 import 'package:jihc_landf/src/features/auth/presentation/bloc/auth_bloc_bloc.dart';
 import 'package:jihc_landf/src/features/auth/presentation/pages/login.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jihc_landf/src/features/home/presentation/pages/home.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -328,7 +325,6 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
-
   Row registerButton(
     BuildContext context,
     GlobalKey<FormState> formKey,

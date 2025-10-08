@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:jihc_landf/src/core/item/data/models/itemModel.dart';
 import 'package:jihc_landf/src/core/item/data/repositories/itemRepositoryImpl.dart';
 import 'package:jihc_landf/src/core/item/domain/entities/itemEntity.dart';
 import 'package:jihc_landf/src/features/home/presentation/utils/filter.dart';
@@ -10,14 +9,12 @@ part 'item_state.dart';
 
 class ItemBloc extends Bloc<ItemEvent, ItemState> {
   final ItemRepositoryImpl repository;
-  List<ItemEntity> _allItems = [];
 
   ItemBloc(this.repository) : super(ItemInitial()) {
     on<FetchItems>((event, emit) async {
       emit(ItemLoading());
       final result = await repository.fetchItems();
       result.fold((failure) => emit(ItemError(failure.failure)), (items) async {
-        _allItems = items;
         emit(ItemLoaded(items, Filter.all));
       });
     });
@@ -32,14 +29,13 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     });
     on<FetchUserItems>((event, emit) async {
       emit(ItemLoading());
-      final result = await repository.fetchItems();
+      final result = await repository.fetchUserItems(event.userId);
       result.fold((failure) => emit(ItemError(failure.failure)), (items) {
         final userItems =
             items.where((item) => item.user_id == event.userId).toList();
         emit(ItemLoaded(userItems, Filter.all));
       });
     });
-
     on<DeleteItem>((event, emit) async {
       emit(ItemLoading());
       final result = await repository.deleteItem(event.itemId);
@@ -52,7 +48,6 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
           fetchResult.fold((failure) => emit(ItemError(failure.failure)), (
             items,
           ) {
-            _allItems = items;
             emit(ItemLoaded(items, Filter.all));
           });
         },
