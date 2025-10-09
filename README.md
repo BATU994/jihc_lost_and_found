@@ -23,7 +23,7 @@ Built using <strong>Flutter</strong>, <strong>Bloc</strong>, and <strong>Dio</st
 
 <h2>🔐 Login & Registration</h2>
 
-<div align="center" style="display:flex; gap:10px; justify-content:center;">
+<div align="center" style="display:flex; gap:10px; justify-content:center; align-items:center">
   <img src="https://github.com/user-attachments/assets/3df21cea-8188-4afd-b45c-022ae7590d88" width="250" alt="Login">
   <img src="https://github.com/user-attachments/assets/d9d58581-8e34-4799-a726-3a6c5eaf56d5" width="250" alt="Register">
 </div>
@@ -44,7 +44,7 @@ Built using <strong>Flutter</strong>, <strong>Bloc</strong>, and <strong>Dio</st
 
 <h2>🏠 Home Page</h2>
 
-<div align="center" style="display:flex; gap:10px; justify-content:center;">
+<div align="center" style="display:flex; gap:10px; justify-content:center; align-items:center">
   <img src="https://github.com/user-attachments/assets/7f065813-473f-4526-b11d-a13f3fa2c002" width="230" alt="Grid View">
   <img src="https://github.com/user-attachments/assets/e5cf9e19-a0a3-444a-b22b-cf1fd260ddaa" width="230" alt="List View">
   <img src="https://github.com/user-attachments/assets/ba57bb50-52ae-46b5-9829-836505b0c562" width="230" alt="Filtered">
@@ -74,7 +74,7 @@ Built using <strong>Flutter</strong>, <strong>Bloc</strong>, and <strong>Dio</st
 
 <h2>📦 Post Item</h2>
 
-<div align="center" style="display:flex; gap:10px; justify-content:center;">
+<div align="center" style="display:flex; gap:10px; justify-content:center; align-items:center">
   <img src="https://github.com/user-attachments/assets/de3fc8ea-4cf9-40cd-a935-f2ab599e9c34" width="230" alt="Post Item">
   <img src="https://github.com/user-attachments/assets/abc5143f-f173-4ada-b6b8-b2e5d0bd5c61" width="230" alt="Preview">
 </div>
@@ -89,7 +89,7 @@ Built using <strong>Flutter</strong>, <strong>Bloc</strong>, and <strong>Dio</st
 
 <h2>💬 Direct Messages</h2>
 
-<div align="center" style="display:flex; gap:10px; justify-content:center;">
+<div align="center" style="display:flex; gap:10px; justify-content:center; align-items:center">
   <img src="https://github.com/user-attachments/assets/346ec072-d4e3-4890-90c1-4e6b3bdf6b04" width="230" alt="Chats">
   <img src="https://github.com/user-attachments/assets/bae35b24-2d7d-4106-b9fe-b3b4607f8610" width="230" alt="Messages">
 </div>
