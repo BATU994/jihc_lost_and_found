@@ -1,0 +1,1 @@
+enum PageSwitch {faq, contact, report}

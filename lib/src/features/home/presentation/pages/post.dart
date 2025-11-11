@@ -157,6 +157,7 @@ class _PostPageState extends State<PostPage> {
                           if (image != null) {
                             bytes = await image.readAsBytes();
                           }
+                          setState(() {});
                         },
                         child: DottedBorder(
                           options: RoundedRectDottedBorderOptions(
@@ -302,19 +303,19 @@ class _PostPageState extends State<PostPage> {
                                   return;
                                 }
                                 ProfileInfo profileInfo = ProfileInfo();
-                                String? userId = await profileInfo.getId();
+                                int? userId = await profileInfo.getId();
                                 String? userName =
                                     await profileInfo.getUserName();
                                 context.read<ItemBloc>().add(
                                   PostItemRequested(
                                     item: ItemEntityPost(
                                       userName: userName ?? '',
-                                      user_id: userId ?? '',
+                                      user_id: userId ?? 0,
                                       item_name: _nameController.text,
                                       desc: _descController.text,
                                       location: _locationController.text,
                                       item_image:
-                                          bytes, // <-- Pass bytes, not string
+                                          bytes, 
                                       date: _dateController.text,
                                       isLost: isLost,
                                       isResolved: false,

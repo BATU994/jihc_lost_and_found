@@ -9,7 +9,7 @@ import 'package:jihc_landf/src/core/item/data/repositories/itemRepositoryImpl.da
 import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
 import 'package:jihc_landf/src/features/home/presentation/pages/home.dart';
 import 'package:jihc_landf/src/features/home/presentation/pages/post.dart';
-import 'package:jihc_landf/src/features/home/presentation/pages/profile.dart';
+import 'package:jihc_landf/src/features/profile/pages/profile.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jihc_landf/src/features/chat/presentation/pages/chatList.dart';
 import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
@@ -47,7 +47,6 @@ class _NavBuildState extends State<NavBuild> {
                     setState(() {
                       navIndex = 0;
                     });
-                    // Refresh items when navigating back to Home tab
                     context.read<ItemBloc>().add(FetchItems());
                   },
                   child: AnimatedContainer(
@@ -225,18 +224,7 @@ class _NavBuildState extends State<NavBuild> {
           ),
         ],
         child:
-            [
-              HomePage(),
-              PostPage(),
-              FutureBuilder<String?>(
-                future: ProfileInfo().getId(),
-                builder: (context, snap) {
-                  final id = int.tryParse((snap.data ?? '1')) ?? 1;
-                  return ChatListPage(currentUserId: id);
-                },
-              ),
-              ProfilePage(),
-            ][navIndex],
+            [HomePage(), PostPage(), ChatListPage(), ProfilePage()][navIndex],
       ),
     );
   }

@@ -14,6 +14,9 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool _passwordVisible = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Color buttonColor = const Color.fromRGBO(0, 119, 255, 1);
+  String buttonText = 'SIGN UP';
   @override
   void initState() {
     super.initState();
@@ -31,15 +34,14 @@ class _RegisterPageState extends State<RegisterPage> {
   String name = '';
   String email = '';
   String password = '';
-  Color buttonColor = Color.fromRGBO(0, 119, 255, 1);
-  String buttonText = 'SIGN UP';
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
-      body: BlocConsumer<AuthBlocBloc, AuthBlocState>(
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: BlocListener<AuthBlocBloc, AuthBlocState>(
         listener: (context, state) {
           if (state is AuthBlocSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -62,8 +64,7 @@ class _RegisterPageState extends State<RegisterPage> {
             );
           }
         },
-        builder: (context, state) {
-          return SingleChildScrollView(
+        child: SingleChildScrollView(
             child: Center(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(16, 30, 16, 10),
@@ -98,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Form(
-                            key: formKey,
+                            key: _formKey,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -292,7 +293,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           ),
                           SizedBox(height: 40),
-                          registerButton(context, formKey, state),
+                          registerButton(context, _formKey),
                           SizedBox(height: 20),
                           Row(
                             children: [
@@ -320,15 +321,14 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
   Row registerButton(
     BuildContext context,
     GlobalKey<FormState> formKey,
-    AuthBlocState state,
   ) {
     return Row(
       children: [

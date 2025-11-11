@@ -19,6 +19,9 @@ class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Color _buttonColor = const Color.fromRGBO(0, 119, 255, 1);
+  String _buttonText = 'SIGN IN';
   @override
   void initState() {
     super.initState();
@@ -30,11 +33,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final formKey = GlobalKey<FormState>();
-    Color buttonColor = Color.fromRGBO(0, 119, 255, 1);
-    String buttonText = 'SIGN IN';
     return Scaffold(
-      body: BlocConsumer<AuthBlocBloc, AuthBlocState>(
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: BlocListener<AuthBlocBloc, AuthBlocState>(
         listener: (context, state) {
           if (state is AuthBlocAuthenticated) {
             Navigator.pushReplacement(
@@ -43,12 +45,14 @@ class _LoginPageState extends State<LoginPage> {
             );
           }
         },
-        builder: (context, state) {
-          String? errorMsg;
-          if (state is AuthFailed) {
-            errorMsg = state.failMessage;
-          }
-          return SingleChildScrollView(
+        child: Builder(
+          builder: (context) {
+            final state = context.watch<AuthBlocBloc>().state;
+            String? errorMsg;
+            if (state is AuthFailed) {
+              errorMsg = state.failMessage;
+            }
+            return SingleChildScrollView(
             child: Center(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(16, 30, 16, 20),
@@ -112,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                     SizedBox(height: 20),
                     Form(
-                      key: formKey,
+                      key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -128,7 +132,6 @@ class _LoginPageState extends State<LoginPage> {
                             controller: _emailController,
                             validator: (value) {
                               final v = value ?? '';
-                              // Correct email regex (no literal $ at end)
                               final ok = RegExp(
                                 r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$',
                               ).hasMatch(v);
@@ -199,15 +202,10 @@ class _LoginPageState extends State<LoginPage> {
                                   onPressed: () {
                                     email = _emailController.text.trim();
                                     password = _passwordController.text.trim();
-                                    if (formKey.currentState!.validate()) {
+                                    if (_formKey.currentState!.validate()) {
                                       setState(() {
-                                        buttonColor = Color.fromRGBO(
-                                          0,
-                                          99,
-                                          204,
-                                          1,
-                                        );
-                                        buttonText = 'REGISTERING...';
+                                        _buttonColor = const Color.fromRGBO(0, 99, 204, 1);
+                                        _buttonText = 'REGISTERING...';
                                       });
 
                                       context.read<AuthBlocBloc>().add(
@@ -219,7 +217,7 @@ class _LoginPageState extends State<LoginPage> {
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: buttonColor,
+                                    backgroundColor: _buttonColor,
                                     foregroundColor: Colors.white,
                                     padding: EdgeInsets.symmetric(vertical: 17),
                                     shape: RoundedRectangleBorder(
@@ -227,7 +225,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                   child: Text(
-                                    buttonText,
+                                    _buttonText,
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -329,8 +327,10 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           );
-        },
+          },
+        ),
       ),
+    ),
     );
   }
 }

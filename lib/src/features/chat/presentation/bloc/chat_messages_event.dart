@@ -7,8 +7,20 @@ class LoadChatMessages extends ChatMessagesEvent {
   LoadChatMessages(this.chatId);
 }
 
-class SendChatMessage extends ChatMessagesEvent {
+class ConnectToChat extends ChatMessagesEvent {
   final int chatId;
-  final String content;
-  SendChatMessage(this.chatId, this.content);
+  ConnectToChat(this.chatId);
 }
+
+class SendChatMessage extends ChatMessagesEvent {
+  final int senderId;
+  final int receiverId;
+  final String content;
+  SendChatMessage({
+    required this.senderId,
+    required this.receiverId,
+    required this.content,
+  });
+}
+
+class DisconnectChat extends ChatMessagesEvent {}

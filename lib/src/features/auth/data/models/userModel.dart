@@ -42,3 +42,22 @@ class UserRegisterModel extends UserEntityRegister {
     );
   }
 }
+
+class UserChangeModel extends UserChangeEntity {
+  UserChangeModel({
+    required super.username,
+    required super.password,
+    required super.email,
+    required super.userGroup,
+    required super.userType,
+  });
+  Map<String, dynamic> toJson() {
+    return {
+      "email": email,
+      "name": username,
+      "group": userGroup,
+      "userType": userType,
+      "password": password,
+    };
+  }
+}

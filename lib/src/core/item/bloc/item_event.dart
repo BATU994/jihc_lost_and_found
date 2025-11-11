@@ -17,7 +17,8 @@ class FetchUserItems extends ItemEvent {
 
 class DeleteItem extends ItemEvent {
   final String itemId;
-  DeleteItem(this.itemId);
+  final int userId;
+  DeleteItem(this.itemId, this.userId);
 }
 
 class FetchUserName extends ItemEvent {
@@ -27,5 +28,7 @@ class FetchUserName extends ItemEvent {
 
 class ResolveItem extends ItemEvent {
   final String itemId;
-  ResolveItem(this.itemId);
+  final bool isProfile;
+  final int userId;
+  ResolveItem(this.itemId, this.isProfile, this.userId);
 }

@@ -18,7 +18,21 @@ class AuthRegisterRequested extends AuthBlocEvent {
   final String group;
   final String userType;
 
-  AuthRegisterRequested({ required this.email, required this.name, required this.password, required this.gender, required this.group, required this.userType });
+  AuthRegisterRequested({
+    required this.email,
+    required this.name,
+    required this.password,
+    required this.gender,
+    required this.group,
+    required this.userType,
+  });
 }
 
 class AuthLogoutRequested extends AuthBlocEvent {}
+
+class UserChangeRequested extends AuthBlocEvent {
+  final UserChangeModel userChanged;
+  final String validPassword;
+  final int userId;
+  UserChangeRequested({required this.userChanged, required this.userId, required this.validPassword});
+}

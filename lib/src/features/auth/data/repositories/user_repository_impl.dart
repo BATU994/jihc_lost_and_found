@@ -49,6 +49,25 @@ class UserRepositoryImpl implements UserRepository {
     }
   }
 
+  Future<Either<Failure, Unit>> userChange(
+    UserChangeModel userData,
+    int userId,
+  ) async {
+    try {
+      final response = await dio.put(
+        '${ApiClient.defaultBaseUrl}/auth/edit/$userId',
+        data: userData.toJson(),
+      );
+      if (response.statusCode == 200) {
+        return Right(unit);
+      } else {
+        return Left(Failure(failure: "${response.statusCode} Error Code"));
+      }
+    } catch (e) {
+      return Left(Failure(failure: e.toString()));
+    }
+  }
+
   @override
   Future<Either<Failure, UserEntity>> login(
     String email,

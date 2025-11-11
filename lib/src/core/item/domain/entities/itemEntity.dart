@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 class ItemEntity {
   final String item_id;
-  final String user_id;
+  final int user_id;
   final String item_name;
   final bool isLost;
   final bool isResolved;
@@ -26,7 +26,7 @@ class ItemEntity {
 }
 
 class ItemEntityPost {
-  final String user_id;
+  final int user_id;
   final String item_name;
   final String userName;
   final bool isLost;

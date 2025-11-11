@@ -34,30 +34,45 @@ class ChatDto {
 }
 
 class MessageDto {
-  final int id;
   final int senderId;
   final int receiverId;
   final String content;
   final DateTime timestamp;
   MessageDto({
-    required this.id,
     required this.senderId,
     required this.receiverId,
     required this.content,
     required this.timestamp,
   });
   factory MessageDto.fromJson(Map<String, dynamic> json) => MessageDto(
-    id: json['id'] as int,
     senderId: json['sender_id'] as int,
     receiverId: json['receiver_id'] as int,
     content: json['content'] as String,
     timestamp: DateTime.parse(json['timestamp'] as String),
   );
-  MessageEntity toEntity() => MessageEntity(
-    id: id,
+  MessageEntity toEntity() => MessageEntity(  
     senderId: senderId,
     receiverId: receiverId,
     content: content,
     timestamp: timestamp,
   );
+}
+
+class MessagePost {
+  final int senderId;
+  final int receiverId;
+  final String content;
+  MessagePost({ 
+    required this.senderId,
+    required this.receiverId,
+    required this.content,
+  });
+  factory MessagePost.fromJson(Map<String, dynamic> json) => MessagePost(
+    senderId: json['sender_id'] as int,
+    receiverId: json['receiver_id'] as int,
+    content: json['content'] as String,
+  );
+  Map<String, dynamic> toJson() {
+    return {'sender_id': senderId, 'receiver_id': receiverId, 'content': content};
+  }
 }

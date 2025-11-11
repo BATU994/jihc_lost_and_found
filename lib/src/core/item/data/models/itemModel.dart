@@ -17,7 +17,7 @@ class ItemModel extends ItemEntity {
   factory ItemModel.fromJson(Map<String, dynamic> json) {
     return ItemModel(
       userName: json['userName'].toString(),
-      user_id: json['userId'].toString(),
+      user_id: json['userId'],
       item_name: json['item_name'].toString(),
       isLost: json['isLost'],
       desc: json['desc'].toString(),

@@ -41,8 +41,21 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final Future<String?> _tokenFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _tokenFuture = ProfileInfo().getToken();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,28 +73,19 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: BlocBuilder<AuthBlocBloc, AuthBlocState>(
-        builder: (context, state) {
-          if (state is AuthBlocAuthenticated) {
+      home: FutureBuilder<String?>(
+        future: _tokenFuture,
+        builder: (context, snap) {
+          if (!snap.hasData) {
+            return const LoginPage();
+          }
+          final token = snap.data;
+          if (token != null) {
             return const NavBuild();
           }
-          // Fallback to stored token async
-          return FutureBuilder<String?>(
-            future: ProfileInfo().getToken(),
-            builder: (context, snap) {
-              if (!snap.hasData) {
-                return const LoginPage();
-              }
-              final token = snap.data;
-              if (token != null) {
-                return const NavBuild();
-              }
-              return const LoginPage();
-            },
-          );
+          return const LoginPage();
         },
       ),
-      routes: {'/chats': (_) => const ChatListPage(currentUserId: 1)},
     );
   }
 }

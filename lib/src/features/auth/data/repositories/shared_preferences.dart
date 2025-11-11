@@ -34,11 +34,13 @@ class ProfileInfo {
     return prefs.getString('username');
   }
 
-  Future<String?> getId() async {
+  Future<int?> getId() async {
     final prefs = await SharedPreferences.getInstance();
     final dynamic storedUserId = prefs.get('userId');
     if (storedUserId == null) return null;
-    return storedUserId is String ? storedUserId : storedUserId.toString();
+    return storedUserId is int
+        ? storedUserId
+        : int.tryParse(storedUserId.toString());
   }
 
   Future<String?> getToken() async {

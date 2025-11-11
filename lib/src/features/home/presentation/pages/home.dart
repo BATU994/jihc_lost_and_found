@@ -3,9 +3,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jihc_landf/src/core/item/data/models/itemModel.dart';
 import 'package:jihc_landf/src/core/item/domain/entities/itemEntity.dart';
 import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
-import 'package:jihc_landf/src/features/home/presentation/utils/filter.dart';
+import 'package:jihc_landf/src/features/auth/data/repositories/shared_preferences.dart';
+import 'package:jihc_landf/src/core/enums/filter.dart';
 import 'package:jihc_landf/src/features/home/presentation/widgets/itemWidget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jihc_landf/src/features/home/presentation/widgets/three_picker.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -64,23 +66,34 @@ class _HomePageState extends State<HomePage> {
                         } else if (state is ItemLoading) {
                           Center(child: CircularProgressIndicator());
                         } else if (state is ItemLoaded) {
+                          List<ItemEntity> otherItems =
+                              state.items.where((item) {
+                                return item.user_id != ProfileInfo().getId();
+                              }).toList();
                           List<ItemEntity> filteredItems;
                           switch (selectedFilter) {
                             case Filter.lost:
                               filteredItems =
-                                  state.items
+                                  otherItems
                                       .where((item) => item.isLost)
                                       .toList();
                               break;
                             case Filter.found:
                               filteredItems =
-                                  state.items
+                                  otherItems
                                       .where((item) => !item.isLost)
                                       .toList();
                               break;
                             case Filter.all:
                               filteredItems = state.items;
                           }
+                          filteredItems =
+                              filteredItems.where((item) {
+                                return item.item_name.contains(
+                                  searchController.text,
+                                  0,
+                                );
+                              }).toList();
                           return GridView.builder(
                             itemCount: filteredItems.length,
                             shrinkWrap: true,
@@ -108,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                           );
                         }
                         return Text('Something went wrong');
-                      },  
+                      },
                     );
                   },
                 ),
@@ -124,153 +137,50 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    squareLayout = true;
-                  });
-                },
-                child: SvgPicture.asset(
-                  squareLayout
-                      ? 'assets/square_layOut_act.svg'
-                      : 'assets/square_layOut.svg',
-                  width: 30,
-                  height: 30,
-                  color: Colors.blue,
-                ),
+        Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  squareLayout = true;
+                });
+              },
+              child: SvgPicture.asset(
+                squareLayout
+                    ? 'assets/square_layOut_act.svg'
+                    : 'assets/square_layOut.svg',
+                width: 30,
+                height: 30,
+                color: Colors.blue,
               ),
-              SizedBox(width: 10),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    squareLayout = false;
-                  });
-                },
-                child: SvgPicture.asset(
-                  !squareLayout
-                      ? 'assets/rectangle_layOut_act.svg'
-                      : 'assets/rectangle_layOut.svg',
-                  width: 30,
-                  height: 30,
-                  color: Colors.blue,
-                ),
+            ),
+            const SizedBox(width: 10),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  squareLayout = false;
+                });
+              },
+              child: SvgPicture.asset(
+                !squareLayout
+                    ? 'assets/rectangle_layOut_act.svg'
+                    : 'assets/rectangle_layOut.svg',
+                width: 30,
+                height: 30,
+                color: Colors.blue,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        Container(
-          padding: EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: Color.fromRGBO(236, 237, 238, 1),
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    selectedFilter = Filter.all;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 150),
-                  width: 80,
-                  decoration: BoxDecoration(
-                    color:
-                        selectedFilter == Filter.all
-                            ? Color.fromRGBO(36, 138, 255, 1)
-                            : Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Center(
-                    child: Text(
-                      'All',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            selectedFilter == Filter.all
-                                ? Colors.white
-                                : Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 3),
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    selectedFilter = Filter.lost;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 150),
-                  width: 80,
-                  decoration: BoxDecoration(
-                    color:
-                        selectedFilter == Filter.lost
-                            ? Color.fromRGBO(36, 138, 255, 1)
-                            : Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Center(
-                    child: Text(
-                      'Lost',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            selectedFilter == Filter.lost
-                                ? Colors.white
-                                : Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 3),
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    selectedFilter = Filter.found;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 150),
-                  width: 80,
-                  decoration: BoxDecoration(
-                    color:
-                        selectedFilter == Filter.found
-                            ? Color.fromRGBO(36, 138, 255, 1)
-                            : Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Center(
-                    child: Text(
-                      'Found',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            selectedFilter == Filter.found
-                                ? Colors.white
-                                : Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+        SizedBox(width: 30),
+        Expanded(
+          child: ThreePicker(
+            selectedFilter: selectedFilter,
+            onChanged: (filter) {
+              setState(() {
+                selectedFilter = filter;
+              });
+            },
           ),
         ),
       ],

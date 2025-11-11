@@ -31,3 +31,18 @@ class UserEntityRegister {
     required this.gender,
   });
 }
+
+class UserChangeEntity {
+  final String username;
+  final String password;
+  final String userType;
+  final String userGroup;
+  final String email;
+  UserChangeEntity({
+    required this.username,
+    required this.password,
+    required this.email,
+    required this.userGroup,
+    required this.userType,
+  });
+}

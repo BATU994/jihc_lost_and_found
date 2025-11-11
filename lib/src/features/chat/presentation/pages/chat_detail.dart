@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/core/item/bloc/item_bloc.dart';
+import 'package:jihc_landf/src/features/chat/data/models/chat_models.dart';
+import 'package:jihc_landf/src/features/chat/domain/entities/chat_entities.dart';
 import 'package:jihc_landf/src/features/chat/presentation/bloc/chat_list_bloc.dart';
 import 'package:jihc_landf/src/features/chat/presentation/pages/congrats.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import '../bloc/chat_messages_bloc.dart';
 
 class ChatDetailPage extends StatefulWidget {
@@ -17,7 +22,9 @@ class ChatDetailPage extends StatefulWidget {
     required this.itemImage,
     required this.itemId,
     required this.userName,
+    required this.otherUserId,
   });
+
   final int chatId;
   final String title;
   final int currentUserId;
@@ -25,12 +32,53 @@ class ChatDetailPage extends StatefulWidget {
   final String itemImage;
   final String itemId;
   final String userName;
+  final int otherUserId;
+
   @override
   State<ChatDetailPage> createState() => _ChatDetailPageState();
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
+  late WebSocketChannel channel;
   final _controller = TextEditingController();
+  List<MessageEntity> messages = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize WebSocket
+    channel = WebSocketChannel.connect(
+      Uri.parse("ws://127.0.0.1:8000/chats/ws/${widget.chatId}"),
+    );
+
+    // Listen to incoming messages
+    channel.stream.listen((data) {
+      try {
+        final jsonData = jsonDecode(data);
+        final message = MessageDto.fromJson(jsonData);
+        final messageEntity = message.toEntity();
+        setState(() {
+          messages.add(messageEntity);
+        });
+      } catch (e) {
+        debugPrint('Error parsing WebSocket message: $e');
+      }
+    });
+
+    final state = context.read<ChatMessagesBloc>().state;
+    if (state is ChatMessagesLoaded) {
+      messages = List.from(state.messages);
+    }
+  }
+
+  @override
+  void dispose() {
+    channel.sink.close();
+    _controller.dispose();
+    context.read<ChatMessagesBloc>().add(DisconnectChat());
+    super.dispose();
+  }
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
@@ -46,25 +94,16 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             child: Icon(Icons.person, size: 18, color: Colors.black54),
           ),
           const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 100,
-                child: Expanded(
-                  child: Text(
-                    widget.title,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
+          Expanded(
+            child: Text(
+              widget.title,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.w700,
               ),
-            ],
+            ),
           ),
-          const Spacer(),
           const Icon(Icons.phone, color: Colors.black87),
           const SizedBox(width: 12),
         ],
@@ -79,11 +118,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -94,24 +130,28 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Text(
                 widget.item,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   color: Colors.black87,
                 ),
               ),
-              SizedBox(height: 2),
             ],
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<ItemBloc>().add(ResolveItem(widget.itemId));
+              context.read<ItemBloc>().add(
+                ResolveItem(widget.itemId, false, 0),
+              );
               context.read<ChatListBloc>().add(
                 DeleteChat(widget.chatId.toString()),
               );
-              Navigator.push(context, MaterialPageRoute(builder: (context) => Congrats()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Congrats()),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0A84FF),
@@ -121,7 +161,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
             child: Row(
-              children: [
+              children: const [
                 Icon(Icons.done, color: Colors.white, size: 24),
                 SizedBox(width: 4),
                 Text(
@@ -138,41 +178,48 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-        backgroundColor: Colors.white,
-        appBar: _buildAppBar(),
-        body: Column(
-          children: [
-            _contextBanner(),
-            Expanded(
-              child: BlocBuilder<ChatMessagesBloc, ChatMessagesStateBloc>(
-                builder: (context, state) {
-                  if (state is ChatMessagesLoading) {
-                    return const Center(child: CircularProgressIndicator());
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: _buildAppBar(),
+      body: Column(
+        children: [
+          _contextBanner(),
+          Expanded(
+            child: BlocBuilder<ChatMessagesBloc, ChatMessagesStateBloc>(
+              builder: (context, state) {
+                if (state is ChatMessagesLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is ChatMessagesError) {
+                  return Center(child: Text(state.message));
+                }
+                if (state is ChatMessagesLoaded) {
+                  if (messages.isEmpty) {
+                    messages = List.from(state.messages);
                   }
-                  if (state is ChatMessagesError) {
-                    return Center(child: Text(state.message));
-                  }
-                  if (state is! ChatMessagesLoaded) {
-                    return const SizedBox.shrink();
-                  }
+
                   return ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: state.messages.length,
+                    itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      final m = state.messages[index];
+                      final m = messages[index];
                       final ts = DateFormat('dd MMM').format(m.timestamp);
                       final isMe = m.senderId == widget.currentUserId;
+
+                      bool showDateHeader =
+                          index == 0 ||
+                          messages[index - 1].timestamp.day != m.timestamp.day;
+
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          if (index == 0)
+                          if (showDateHeader)
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 10,
                                 vertical: 6,
                               ),
-                              margin: const EdgeInsets.only(bottom: 8),
+                              margin: const EdgeInsets.only(bottom: 8, top: 16),
                               decoration: BoxDecoration(
                                 color: Colors.grey.shade300,
                                 borderRadius: BorderRadius.circular(14),
@@ -213,55 +260,63 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       );
                     },
                   );
-                },
-              ),
+                }
+                return const SizedBox.shrink();
+              },
             ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: TextField(
-                          controller: _controller,
-                          decoration: const InputDecoration(
-                            hintText: 'Type a message',
-                            border: InputBorder.none,
-                          ),
+          ),
+
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: TextField(
+                        controller: _controller,
+                        decoration: const InputDecoration(
+                          hintText: 'Type a message',
+                          border: InputBorder.none,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF0A84FF),
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.send, color: Colors.white),
-                        onPressed: () {
-                          final text = _controller.text.trim();
-                          if (text.isEmpty) return;
-                          context.read<ChatMessagesBloc>().add(
-                            SendChatMessage(widget.chatId, text),
-                          );
-                          _controller.clear();
-                        },
-                      ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF0A84FF),
+                      shape: BoxShape.circle,
                     ),
-                  ],
-                ),
+                    child: IconButton(
+                      icon: const Icon(Icons.send, color: Colors.white),
+                      onPressed: () {
+                        final text = _controller.text.trim();
+                        if (text.isEmpty) return;
+
+                        final message = MessagePost(
+                          senderId: widget.currentUserId,
+                          receiverId: widget.otherUserId,
+                          content: text,
+                        );
+
+                        channel.sink.add(jsonEncode(message.toJson()));
+
+                        _controller.clear();
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      );
-    
+          ),
+        ],
+      ),
+    );
   }
 }

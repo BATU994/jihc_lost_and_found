@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jihc_landf/src/core/datasources.dart';
 import 'package:jihc_landf/src/core/item/data/models/itemModel.dart';
-import 'package:jihc_landf/src/features/home/presentation/pages/itemDetail.dart';
+import 'package:jihc_landf/src/features/home/presentation/pages/item_detail.dart';
 
 Widget itemRectangle(BuildContext context, ItemModel itemModel) {
   return GestureDetector(

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:jihc_landf/src/core/item/data/repositories/itemRepositoryImpl.dart';
 import 'package:jihc_landf/src/core/item/domain/entities/itemEntity.dart';
-import 'package:jihc_landf/src/features/home/presentation/utils/filter.dart';
+import 'package:jihc_landf/src/core/enums/filter.dart';
 import 'package:meta/meta.dart';
 
 part 'item_event.dart';
@@ -42,27 +42,25 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
           emit(ItemError(failure.failure));
         },
         (_) async {
-          final fetchResult = await repository.fetchItems();
-          fetchResult.fold((failure) => emit(ItemError(failure.failure)), (
-            items,
-          ) {
-            emit(ItemLoaded(items, Filter.all));
-          });
+          add(FetchUserItems(event.userId));
         },
       );
     });
 
     on<ResolveItem>((event, emit) async {
       emit(ItemLoading());
+
       final result = await repository.resolveItem(event.itemId);
-      result.fold((failure) => emit(ItemError(failure.failure)), (_) async {
-        final fetchResult = await repository.fetchItems();
-        fetchResult.fold((failure) => emit(ItemError(failure.failure)), (
-          items,
-        ) {
-          emit(ItemLoaded(items, Filter.all));
-        });
-      });
+      if (result.isLeft()) {
+        emit(ItemError('failed'));
+        return;
+      }
+      final fetchResult = await repository.fetchItems();
+      if (fetchResult.isLeft()) {
+        emit(ItemError('failed'));
+        return;
+      }
+      add(FetchUserItems(event.userId));
     });
   }
 }

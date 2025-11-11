@@ -94,8 +94,13 @@ Widget itemProfile(BuildContext context, ItemEntity itemModel) {
                   !itemModel.isResolved
                       ? InkWell(
                         onTap: () {
-                          context.read<ItemBloc>().add(ResolveItem(itemModel.item_id));
-                          
+                          context.read<ItemBloc>().add(
+                            ResolveItem(
+                              itemModel.item_id,
+                              true,
+                              itemModel.user_id,
+                            ),
+                          );
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(
@@ -125,7 +130,7 @@ Widget itemProfile(BuildContext context, ItemEntity itemModel) {
                   InkWell(
                     onTap: () {
                       context.read<ItemBloc>().add(
-                        DeleteItem(itemModel.item_id),
+                        DeleteItem(itemModel.item_id, itemModel.user_id),
                       );
                     },
                     child: Container(

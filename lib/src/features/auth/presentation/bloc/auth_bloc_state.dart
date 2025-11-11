@@ -3,11 +3,11 @@ part of 'auth_bloc_bloc.dart';
 @immutable
 abstract class AuthBlocState {}
 
- class AuthBlocInitial extends AuthBlocState {}
+class AuthBlocInitial extends AuthBlocState {}
 
- class AuthBlocLoading extends AuthBlocState {}
+class AuthBlocLoading extends AuthBlocState {}
 
- class AuthBlocAuthenticated extends AuthBlocState {
+class AuthBlocAuthenticated extends AuthBlocState {
   final UserEntity user;
   AuthBlocAuthenticated(this.user);
 }
@@ -18,5 +18,12 @@ class AuthFailed extends AuthBlocState {
   final String failMessage;
   AuthFailed(this.failMessage);
 }
+
+class ChangeFailed extends AuthBlocState {
+  final String failMessage;
+  ChangeFailed(this.failMessage);
+}
+
+class UserDetailChanged extends AuthBlocState {}
 
 class AuthBlocUnauthenticated extends AuthBlocState {}

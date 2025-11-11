@@ -21,13 +21,11 @@ class ChatEntity extends Equatable {
 }
 
 class MessageEntity extends Equatable {
-  final int id;
   final int senderId;
   final int receiverId;
   final String content;
   final DateTime timestamp;
   const MessageEntity({
-    required this.id,
     required this.senderId,
     required this.receiverId,
     required this.content,
@@ -35,5 +33,5 @@ class MessageEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, senderId, receiverId, content, timestamp];
+  List<Object?> get props => [senderId, receiverId, content, timestamp];
 }
